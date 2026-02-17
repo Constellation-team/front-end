@@ -88,6 +88,40 @@ export default function NodeLibrary({ onDragStart }: NodeLibraryProps) {
                     );
                 })}
             </div>
+
+            <div className="connection-rules">
+                <div className="rules-header">
+                    <span>📋</span>
+                    <strong>Connection Rules</strong>
+                </div>
+                <div className="rules-list">
+                    <div className="rule-item">
+                        <strong>🎬 Trigger</strong>
+                        <span>→ Data, Logic, Chainlink, Blockchain, AI</span>
+                        <small>Only 1 trigger per workflow</small>
+                    </div>
+                    <div className="rule-item">
+                        <strong>📡 Data Source</strong>
+                        <span>→ Logic, Chainlink, Blockchain, AI</span>
+                    </div>
+                    <div className="rule-item">
+                        <strong>🔗 Chainlink</strong>
+                        <span>→ Logic, Blockchain, AI</span>
+                    </div>
+                    <div className="rule-item">
+                        <strong>🧠 Logic</strong>
+                        <span>→ Anywhere (most flexible)</span>
+                    </div>
+                    <div className="rule-item">
+                        <strong>⛓️ Blockchain</strong>
+                        <span>→ Logic, AI</span>
+                    </div>
+                    <div className="rule-item">
+                        <strong>🤖 AI</strong>
+                        <span>→ Logic, Blockchain</span>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
