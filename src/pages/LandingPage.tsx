@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
 export default function LandingPage() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Floating particles animation (Antigravity-inspired)
@@ -166,7 +168,7 @@ export default function LandingPage() {
                         <a href="#features">Features</a>
                         <a href="#how-it-works">How It Works</a>
                         <a href="#docs">Docs</a>
-                        <button className="btn-primary">Launch App</button>
+                        <button className="btn-primary" onClick={() => navigate('/builder')}>Launch App</button>
                     </div>
                 </div>
             </nav>
@@ -199,7 +201,7 @@ export default function LandingPage() {
                     </p>
 
                     <div className="hero-cta">
-                        <button className="btn-hero">
+                        <button className="btn-hero" onClick={() => navigate('/builder')}>
                             Start Building
                             <span className="btn-arrow">→</span>
                         </button>
@@ -314,7 +316,7 @@ export default function LandingPage() {
                     <p className="cta-subtitle">
                         Join the future of smart contract development
                     </p>
-                    <button className="btn-hero">
+                    <button className="btn-hero" onClick={() => navigate('/builder')}>
                         Launch CREator
                         <span className="btn-arrow">→</span>
                     </button>
