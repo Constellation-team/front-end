@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './SimulationModal.css';
 
 interface SimulationModalProps {
@@ -17,6 +17,7 @@ export default function SimulationModal({
     onRunAgain 
 }: SimulationModalProps) {
     const contentRef = useRef<HTMLDivElement>(null);
+    const [isCopied, setIsCopied] = useState(false);
 
     useEffect(() => {
         // Auto-scroll to bottom when new output is added
@@ -24,6 +25,23 @@ export default function SimulationModal({
             contentRef.current.scrollTop = contentRef.current.scrollHeight;
         }
     }, [output]);
+
+    // Reset copied state when modal closes
+    useEffect(() => {
+        if (!isOpen) {
+            setIsCopied(false);
+        }
+    }, [isOpen]);
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(output);
+            setIsCopied(true);
+            setTimeout(() => setIsCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -79,6 +97,14 @@ export default function SimulationModal({
                 </div>
 
                 <div className="simulation-modal-footer">
+                    <button 
+                        className="btn-modal btn-copy" 
+                        onClick={handleCopy}
+                        disabled={!output || output === 'Preparing workflow...\n'}
+                    >
+                        {isCopied ? '✓ Copied!' : '📋 Copy Output'}
+                    </button>
+                    <div style={{ flex: 1 }}></div>
                     <button 
                         className="btn-modal btn-secondary" 
                         onClick={onClose}

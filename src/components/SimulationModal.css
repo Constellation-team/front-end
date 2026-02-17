@@ -210,6 +210,22 @@
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
 }
 
+.btn-modal.btn-copy {
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    color: #667eea;
+}
+
+.btn-modal.btn-copy:hover:not(:disabled) {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.5);
+}
+
+.btn-modal.btn-copy:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
 .btn-modal:disabled {
     opacity: 0.5;
     cursor: not-allowed;
