@@ -1,0 +1,284 @@
+.settings-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 2rem;
+}
+
+.settings-modal {
+    background: rgba(10, 10, 15, 0.95);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+}
+
+.settings-modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settings-modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.settings-modal-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.settings-section-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #ffffff;
+}
+
+.config-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.config-status.configured {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+}
+
+.config-status.not-configured {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+}
+
+.settings-description {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.settings-description code {
+    background: rgba(102, 126, 234, 0.2);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.settings-warning {
+    background: rgba(255, 152, 0, 0.1);
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.settings-warning strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #ff9800;
+}
+
+.settings-warning ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.settings-warning li {
+    margin-bottom: 0.25rem;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.input-with-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.settings-input {
+    flex: 1;
+    width: 100%;
+    padding: 0.75rem 3rem 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-family: 'Courier New', monospace;
+    transition: all 0.2s ease;
+}
+
+.settings-input:focus {
+    outline: none;
+    border-color: rgba(102, 126, 234, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.settings-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.toggle-visibility-btn {
+    position: absolute;
+    right: 0.5rem;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.toggle-visibility-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.input-hint {
+    display: block;
+    margin-top: 0.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+}
+
+.settings-error {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: #f44336;
+    margin-bottom: 1rem;
+}
+
+.settings-success {
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: #4caf50;
+    margin-bottom: 1rem;
+}
+
+.settings-help {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(102, 126, 234, 0.05);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: 8px;
+}
+
+.settings-help details {
+    cursor: pointer;
+}
+
+.settings-help summary {
+    font-weight: 600;
+    color: #667eea;
+    padding: 0.5rem;
+    user-select: none;
+}
+
+.settings-help summary:hover {
+    color: #764ba2;
+}
+
+.settings-help ol {
+    margin: 1rem 0 0.5rem 1.5rem;
+    padding-left: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.settings-help li {
+    margin-bottom: 0.5rem;
+}
+
+.settings-help p {
+    margin: 0.75rem 0 0 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.settings-help strong {
+    color: #ff9800;
+}
+
+.settings-modal-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.btn-modal.btn-danger {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    color: #f44336;
+}
+
+.btn-modal.btn-danger:hover:not(:disabled) {
+    background: rgba(244, 67, 54, 0.2);
+    border-color: rgba(244, 67, 54, 0.5);
+}
+
+/* Scrollbar styling */
+.settings-modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.settings-modal-content::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.5);
+    border-radius: 4px;
+}
+
+.settings-modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 126, 234, 0.7);
+}

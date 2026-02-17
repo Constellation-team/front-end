@@ -15,6 +15,7 @@ import { useFlowStore } from '../store/flowStore';
 import NodeLibrary, { type NodeTemplate } from '../components/NodeLibrary';
 import CustomNode from '../components/nodes/CustomNode';
 import SimulationModal from '../components/SimulationModal';
+import SettingsModal from '../components/SettingsModal';
 import { generateCRECode } from '../utils/codeGenerator';
 import { isValidConnection, canAddNode, validateWorkflow } from '../utils/flowValidation';
 
@@ -32,6 +33,9 @@ export default function FlowBuilder() {
     const [isSimulationOpen, setIsSimulationOpen] = useState(false);
     const [simulationOutput, setSimulationOutput] = useState('');
     const [simulationStatus, setSimulationStatus] = useState<'idle' | 'running' | 'success' | 'error'>('idle');
+    
+    // Settings modal state
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     
     // Validation state
     const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -256,6 +260,9 @@ export default function FlowBuilder() {
                     <p className="builder-subtitle">Design your Chainlink workflow visually</p>
                 </div>
                 <div className="header-actions">
+                    <button className="btn-settings" onClick={() => setIsSettingsOpen(true)}>
+                        ⚙️ Settings
+                    </button>
                     <button className="btn-clear" onClick={clearCanvas}>
                         🗑️ Clear
                     </button>
@@ -360,6 +367,11 @@ export default function FlowBuilder() {
                 status={simulationStatus}
                 onClose={() => setIsSimulationOpen(false)}
                 onRunAgain={testWorkflow}
+            />
+
+            <SettingsModal
+                isOpen={isSettingsOpen}
+                onClose={() => setIsSettingsOpen(false)}
             />
         </div>
     );
