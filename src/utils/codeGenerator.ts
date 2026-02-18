@@ -60,7 +60,7 @@ type Config = {
   schedule: string;
 };
 
-const onCronTrigger = (runtime: Runtime<Config>): string => {
+const onCronTrigger = async (runtime: Runtime<Config>): Promise<string> => {
   runtime.log("Workflow triggered.");
   
 ${handlerCode}
@@ -103,7 +103,7 @@ type HttpRequest = {
   headers: Record<string, string>;
 };
 
-const onHttpRequest = (runtime: Runtime<Config>, request: HttpRequest): unknown => {
+const onHttpRequest = async (runtime: Runtime<Config>, request: HttpRequest): Promise<unknown> => {
   runtime.log("Webhook received:", request.body);
   
 ${handlerCode}
@@ -138,7 +138,7 @@ type Config = {
   schedule: string;
 };
 
-const onCronTrigger = (runtime: Runtime<Config>): string => {
+const onCronTrigger = async (runtime: Runtime<Config>): Promise<string> => {
   runtime.log("Workflow triggered.");
   
 ${handlerCode}
@@ -218,9 +218,16 @@ function generateNodeCode(node: Node, index: number): string {
         case 'datasource':
             if (label.toLowerCase().includes('http')) {
                 return `  // Step ${stepNum}: HTTP Data Source
-  const response${stepNum} = await fetch("https://api.example.com/data");
-  const data${stepNum} = await response${stepNum}.json();
-  runtime.log("HTTP Response:", data${stepNum});`;
+  // Note: CRE doesn't support fetch() directly. Use Chainlink Functions for HTTP requests.
+  // Example with Chainlink Functions:
+  // const response${stepNum} = await runtime.runFunction({
+  //   source: "const response = await Functions.makeHttpRequest({ url: 'https://api.example.com/data' }); return response.data;",
+  //   args: []
+  // });
+  
+  // Simulated data for testing:
+  const data${stepNum} = { example: "simulated data", timestamp: Date.now() };
+  runtime.log("HTTP Data Source (simulated):", data${stepNum});`;
             }
             if (label.toLowerCase().includes('database')) {
                 return `  // Step ${stepNum}: Database Query
