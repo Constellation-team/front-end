@@ -1,4 +1,5 @@
 import { useCallback, useRef, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReactFlow, {
     Background,
     Controls,
@@ -24,6 +25,7 @@ const nodeTypes = {
 };
 
 export default function FlowBuilder() {
+    const navigate = useNavigate();
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
     const { nodes, edges, onNodesChange, onEdgesChange, addNode, setSelectedNode } = useFlowStore();
 
@@ -260,6 +262,9 @@ export default function FlowBuilder() {
                     <p className="builder-subtitle">Design your Chainlink workflow visually</p>
                 </div>
                 <div className="header-actions">
+                    <button className="btn-back" onClick={() => navigate('/')}>
+                        ← Back to Home
+                    </button>
                     <button className="btn-settings" onClick={() => setIsSettingsOpen(true)}>
                         ⚙️ Settings
                     </button>
