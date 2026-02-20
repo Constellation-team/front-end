@@ -28,15 +28,15 @@ export default function FlowBuilder() {
     const { nodes, edges, onNodesChange, onEdgesChange, addNode, setSelectedNode } = useFlowStore();
 
     const nodeId = useRef(0);
-    
+
     // Simulation modal state
     const [isSimulationOpen, setIsSimulationOpen] = useState(false);
     const [simulationOutput, setSimulationOutput] = useState('');
     const [simulationStatus, setSimulationStatus] = useState<'idle' | 'running' | 'success' | 'error'>('idle');
-    
+
     // Settings modal state
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    
+
     // Validation state
     const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
@@ -45,18 +45,18 @@ export default function FlowBuilder() {
             // Validate connection before creating it
             const sourceNode = nodes.find(n => n.id === params.source);
             const targetNode = nodes.find(n => n.id === params.target);
-            
+
             const validation = isValidConnection(sourceNode, targetNode);
-            
+
             if (!validation.valid) {
                 alert(`❌ Invalid Connection\n\n${validation.reason}`);
                 return;
             }
-            
+
             useFlowStore.setState({
                 edges: addEdge({ ...params, animated: true, style: { stroke: '#667eea' } }, edges),
             });
-            
+
             // Revalidate workflow after connection
             setTimeout(() => {
                 const validation = validateWorkflow(nodes, [...edges, { ...params, id: `e${params.source}-${params.target}`, source: params.source!, target: params.target! }]);
@@ -85,7 +85,7 @@ export default function FlowBuilder() {
 
             if (templateData && reactFlowBounds) {
                 const template: NodeTemplate = JSON.parse(templateData);
-                
+
                 // Validate if node can be added
                 const validation = canAddNode(template.category, nodes);
                 if (!validation.valid) {
@@ -110,7 +110,7 @@ export default function FlowBuilder() {
                 };
 
                 addNode(newNode);
-                
+
                 // Revalidate workflow after adding node
                 setTimeout(() => {
                     const validation = validateWorkflow([...nodes, newNode], edges);
@@ -155,7 +155,7 @@ export default function FlowBuilder() {
             alert('Please add at least one node to test your workflow!');
             return;
         }
-        
+
         // Validate workflow before running
         const validation = validateWorkflow(nodes, edges);
         if (!validation.valid) {
@@ -179,7 +179,7 @@ export default function FlowBuilder() {
 
             // Write files to cre-orchestrator directory
             const orchestratorPath = 'd:\\Proyectos\\Hackathon\\Chainlink\\cre-orchestrator';
-            
+
             // Write main.ts
             await writeFile(`${orchestratorPath}\\workflows\\main.ts`, generatedFiles['main.ts']);
             setSimulationOutput(prev => prev + '✓ main.ts written\n');
@@ -298,11 +298,11 @@ export default function FlowBuilder() {
                             style: { stroke: '#667eea', strokeWidth: 2 },
                         }}
                     >
-                        <Background 
-                            color="rgba(102, 126, 234, 0.3)" 
-                            gap={20} 
-                            size={1}
-                            style={{ background: '#0a0a0f' }}
+                        <Background
+                            color="rgba(102, 126, 234, 0.5)"
+                            gap={24}
+                            size={2}
+                            style={{ background: 'transparent' }}
                         />
                         <Controls style={{ background: 'rgba(10, 10, 15, 0.9)', border: '1px solid rgba(255, 255, 255, 0.1)' }} />
                         <MiniMap style={miniMapStyle} nodeColor="#667eea" />

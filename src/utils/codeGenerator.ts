@@ -87,35 +87,38 @@ export async function main() {
     }
 
     if (isWebhook) {
-        return `import { HttpCapability, handler, Runner, type Runtime } from "@chainlink/cre-sdk";
+        // Note: HttpCapability is not available in current CRE SDK version
+        // Falling back to CronCapability for now
+        return `import { CronCapability, handler, Runner, type Runtime } from "@chainlink/cre-sdk";
 
 /**
  * CREator Generated Workflow
  * Generated from visual flow with ${nodes.length} nodes and ${edges.length} connections
+ * 
+ * NOTE: Webhook trigger (HttpCapability) is not yet available in CRE SDK.
+ * This workflow uses CronCapability instead. You can adjust the schedule in config files.
  */
 
 type Config = {
-  // Add your configuration properties here
+  schedule: string;
 };
 
-type HttpRequest = {
-  body: unknown;
-  headers: Record<string, string>;
-};
-
-const onHttpRequest = async (runtime: Runtime<Config>, request: HttpRequest): Promise<unknown> => {
-  runtime.log("Webhook received:", request.body);
+const onCronTrigger = async (runtime: Runtime<Config>): Promise<string> => {
+  runtime.log("Workflow triggered (Webhook requested but using Cron for now).");
   
 ${handlerCode}
   
-  return { success: true, message: "Workflow completed successfully!" };
+  return "Workflow completed successfully!";
 };
 
 const initWorkflow = (config: Config) => {
-  const http = new HttpCapability();
+  const cron = new CronCapability();
 
   return [
-    handler(http.trigger(), onHttpRequest),
+    handler(
+      cron.trigger({ schedule: config.schedule }), 
+      onCronTrigger
+    ),
   ];
 };
 
@@ -227,7 +230,7 @@ function generateNodeCode(node: Node, index: number): string {
   
   // Simulated data for testing:
   const data${stepNum} = { example: "simulated data", timestamp: Date.now() };
-  runtime.log("HTTP Data Source (simulated):", data${stepNum});`;
+  runtime.log("HTTP Data Source (simulated): " + JSON.stringify(data${stepNum}));`;
             }
             if (label.toLowerCase().includes('database')) {
                 return `  // Step ${stepNum}: Database Query
