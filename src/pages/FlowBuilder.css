@@ -276,8 +276,9 @@
     overflow: hidden;
 }
 
-/* Edges */
-.react-flow__edge-path {
+/* Edges and Connection Lines */
+.react-flow__edge-path,
+.react-flow__connection-path {
     stroke: rgba(102, 126, 234, 0.6) !important;
     stroke-width: 3 !important;
     transition: stroke 0.3s ease;

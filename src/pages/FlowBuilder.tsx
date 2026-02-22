@@ -19,6 +19,7 @@ import SimulationModal from '../components/SimulationModal';
 import SettingsModal from '../components/SettingsModal';
 import { generateCRECode } from '../utils/codeGenerator';
 import { isValidConnection, canAddNode, validateWorkflow } from '../utils/flowValidation';
+import { generateProjectZip, downloadZip } from '../utils/projectTemplateGenerator';
 
 const nodeTypes = {
     custom: CustomNode,
@@ -134,22 +135,48 @@ export default function FlowBuilder() {
         setSelectedNode(null);
     }, [setSelectedNode]);
 
-    const exportFlow = useCallback(() => {
-        const flowData = {
-            nodes: nodes.map(node => ({
-                id: node.id,
-                type: node.data.category,
-                label: node.data.label,
-                config: node.data.config || {},
-            })),
-            connections: edges.map(edge => ({
-                from: edge.source,
-                to: edge.target,
-            })),
-        };
+    const exportFlow = useCallback(async () => {
+        if (nodes.length === 0) {
+            alert('⚠️ Please add at least one node before exporting!');
+            return;
+        }
 
-        console.log('Export Flow:', flowData);
-        alert('Check console for flow data. (Export to CRE YAML coming soon!)');
+        // Prompt for project metadata
+        const projectName = prompt(
+            '📦 Project Name:',
+            'my-chainlink-workflow'
+        );
+        
+        if (!projectName) {
+            return; // User cancelled
+        }
+
+        const projectDescription = prompt(
+            '📝 Project Description:',
+            'A Chainlink CRE workflow generated with CREator'
+        );
+
+        try {
+            // Generate the complete project ZIP
+            const zipBlob = await generateProjectZip(
+                nodes,
+                edges,
+                {
+                    projectName,
+                    description: projectDescription || 'A Chainlink CRE workflow',
+                    author: undefined,
+                }
+            );
+
+            // Download the ZIP file
+            const filename = `${projectName.toLowerCase().replace(/\s+/g, '-')}.zip`;
+            downloadZip(zipBlob, filename);
+
+            alert(`✅ Success!\n\nYour project "${projectName}" has been exported.\n\nThe ZIP contains:\n• Workflow files (main.ts, configs)\n• Project configuration\n• Documentation (README, QUICKSTART)\n• Setup files (.env.example, .gitignore)\n\nExtract the ZIP and follow the QUICKSTART.md to get started!`);
+        } catch (error) {
+            console.error('Export error:', error);
+            alert('❌ Failed to export project. Check console for details.');
+        }
     }, [nodes, edges]);
 
     const testWorkflow = useCallback(async () => {
