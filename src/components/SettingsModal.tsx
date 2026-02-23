@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import './SettingsModal.css';
 
 interface SettingsModalProps {
@@ -22,7 +23,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
     const loadCurrentConfig = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/get-env-config');
+            const response = await fetch(`${API_URL}/api/get-env-config`);
             if (response.ok) {
                 const data = await response.json();
                 setIsConfigured(data.hasPrivateKey);
@@ -55,10 +56,10 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         setErrorMessage('');
 
         try {
-            const response = await fetch('http://localhost:3001/api/set-env-config', {
+            const response = await fetch(`${API_URL}/api/set-env-config`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     privateKey: cleanKey.startsWith('0x') ? cleanKey : `0x${cleanKey}`
                 }),
             });
@@ -113,9 +114,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                 {isConfigured ? '✓ Configured' : '⚠️ Using Default Key'}
                             </span>
                         </div>
-                        
+
                         <p className="settings-description">
-                            Configure your MetaMask private key for blockchain simulations. 
+                            Configure your MetaMask private key for blockchain simulations.
                             This will be stored securely in your local <code>.env</code> file.
                         </p>
 
@@ -189,8 +190,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                 <div className="settings-modal-footer">
                     {isConfigured && (
-                        <button 
-                            className="btn-modal btn-danger" 
+                        <button
+                            className="btn-modal btn-danger"
                             onClick={handleClear}
                             disabled={isSaving}
                         >
@@ -198,15 +199,15 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         </button>
                     )}
                     <div style={{ flex: 1 }}></div>
-                    <button 
-                        className="btn-modal btn-secondary" 
+                    <button
+                        className="btn-modal btn-secondary"
                         onClick={onClose}
                         disabled={isSaving}
                     >
                         Cancel
                     </button>
-                    <button 
-                        className="btn-modal btn-primary" 
+                    <button
+                        className="btn-modal btn-primary"
                         onClick={handleSave}
                         disabled={isSaving}
                     >
