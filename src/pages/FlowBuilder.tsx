@@ -20,6 +20,7 @@ import SettingsModal from '../components/SettingsModal';
 import { generateCRECode } from '../utils/codeGenerator';
 import { isValidConnection, canAddNode, validateWorkflow } from '../utils/flowValidation';
 import { generateProjectZip, downloadZip } from '../utils/projectTemplateGenerator';
+import { API_URL } from '../config';
 
 const nodeTypes = {
     custom: CustomNode,
@@ -146,7 +147,7 @@ export default function FlowBuilder() {
             '📦 Project Name:',
             'my-chainlink-workflow'
         );
-        
+
         if (!projectName) {
             return; // User cancelled
         }
@@ -226,7 +227,7 @@ export default function FlowBuilder() {
             setSimulationOutput(prev => prev + '─'.repeat(60) + '\n\n');
 
             // Run simulation command
-            const response = await fetch('http://localhost:3001/api/simulate', {
+            const response = await fetch(`${API_URL}/api/simulate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orchestratorPath }),
@@ -251,7 +252,7 @@ export default function FlowBuilder() {
     async function writeFile(path: string, content: string) {
         // For now, we'll use a simple fetch to a backend API
         // In production, you might want to use Electron or a backend service
-        const response = await fetch('http://localhost:3001/api/write-file', {
+        const response = await fetch(`${API_URL}/api/write-file`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ path, content }),

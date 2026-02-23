@@ -150,6 +150,28 @@ my-chainlink-workflow.zip
 3. **Click "Probar"**: Runs CRE CLI simulation
 4. **View Output**: See logs, errors, and results
 
+## 🚀 Deployment Guide
+
+This app is designed to be split into two services for production:
+
+### 1. Frontend (Vercel)
+The React/Vite web application can be deployed instantly to Vercel:
+1. Connect this `front-end` repo to Vercel
+2. Framework Preset: `Vite`
+3. Environment variables: `VITE_API_URL=https://your-backend-url.onrender.com` (pointing to your future Render app)
+
+### 2. Backend + Orchestrator (Render)
+The Express backend needs to run on a VPS or service like Render because it requires physical file system access to write the `.yaml` and `.ts` simulator files, and needs the `@chainlink/cre-cli` installed.
+
+Since the Backend and the CLI workspace (`cre-orchestrator`) live in separate repositories, you'll need to deploy the `back-end` repository to Render and configure it to download or clone the `cre-orchestrator` repository during the build process.
+
+1. Connect the `back-end` repo to Render as a Web Service.
+2. Build Command: `npm install && git clone https://github.com/your-username/cre-orchestrator.git ../cre-orchestrator`
+3. Start Command: `npm start`
+4. Environment variables: 
+   - `FRONTEND_URL=https://your-vercel-app.vercel.app` (pointing to your Vercel deployment for CORS config)
+   - `ORCHESTRATOR_PATH=../cre-orchestrator`
+
 ## 🏗️ Project Structure
 
 ```
