@@ -51,18 +51,28 @@ export default function FlowBuilder() {
     useEffect(() => {
         const checkBackend = async () => {
             try {
+                // Create AbortController for timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+                
                 const response = await fetch(`${API_URL}/health`, {
                     method: 'GET',
-                    signal: AbortSignal.timeout(5000), // 5 second timeout
+                    signal: controller.signal,
                 });
+                
+                clearTimeout(timeoutId);
                 
                 if (response.ok) {
                     setBackendStatus('connected');
+                    console.log('✅ Backend connected:', API_URL);
                 } else {
                     setBackendStatus('disconnected');
+                    console.error('❌ Backend responded with error:', response.status);
                 }
             } catch (error) {
                 setBackendStatus('disconnected');
+                console.error('❌ Backend connection failed:', error instanceof Error ? error.message : 'Unknown error');
+                console.log('📍 Attempting to connect to:', API_URL);
             }
         };
 
