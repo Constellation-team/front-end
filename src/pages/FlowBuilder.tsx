@@ -1,4 +1,4 @@
-import { useCallback, useRef, useMemo, useState } from 'react';
+import { useCallback, useRef, useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactFlow, {
     Background,
@@ -43,6 +43,31 @@ export default function FlowBuilder() {
 
     // Validation state
     const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+    // Backend connection state
+    const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+
+    // Check backend connectivity on mount
+    useEffect(() => {
+        const checkBackend = async () => {
+            try {
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(5000), // 5 second timeout
+                });
+                
+                if (response.ok) {
+                    setBackendStatus('connected');
+                } else {
+                    setBackendStatus('disconnected');
+                }
+            } catch (error) {
+                setBackendStatus('disconnected');
+            }
+        };
+
+        checkBackend();
+    }, []);
 
     const onConnect = useCallback(
         (params: Connection) => {
@@ -236,7 +261,8 @@ export default function FlowBuilder() {
             });
 
             if (!response.ok) {
-                throw new Error('Simulation failed');
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(`Simulation failed: ${errorData.error || response.statusText}`);
             }
 
             const data = await response.json();
@@ -245,7 +271,21 @@ export default function FlowBuilder() {
 
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-            setSimulationOutput(prev => prev + `\n❌ Error: ${errorMsg}\n`);
+            
+            // Check if it's a connection error
+            if (errorMsg.includes('fetch') || errorMsg.includes('connect to backend')) {
+                setSimulationOutput(prev => prev + `\n❌ Connection Error\n\n`);
+                setSimulationOutput(prev => prev + `Cannot connect to backend at: ${API_URL}\n\n`);
+                setSimulationOutput(prev => prev + `Possible solutions:\n`);
+                setSimulationOutput(prev => prev + `1. Make sure the backend is running\n`);
+                setSimulationOutput(prev => prev + `2. Update VITE_API_URL in your .env file\n`);
+                setSimulationOutput(prev => prev + `   Current: ${API_URL}\n`);
+                setSimulationOutput(prev => prev + `   For production: Set to your deployed backend URL\n`);
+                setSimulationOutput(prev => prev + `   For development: http://localhost:3001\n\n`);
+                setSimulationOutput(prev => prev + `3. Check browser console for CORS errors\n`);
+            } else {
+                setSimulationOutput(prev => prev + `\n❌ Error: ${errorMsg}\n`);
+            }
             setSimulationStatus('error');
         }
     }, [nodes, edges]);
@@ -254,14 +294,25 @@ export default function FlowBuilder() {
     async function writeFile(path: string, content: string) {
         // For now, we'll use a simple fetch to a backend API
         // In production, you might want to use Electron or a backend service
-        const response = await fetch(`${API_URL}/api/write-file`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ path, content }),
-        });
+        try {
+            const response = await fetch(`${API_URL}/api/write-file`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path, content }),
+            });
 
-        if (!response.ok) {
-            throw new Error(`Failed to write file: ${path}`);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(`Failed to write file: ${path}. ${errorData.error || ''}`);
+            }
+        } catch (error) {
+            if (error instanceof TypeError && error.message.includes('fetch')) {
+                throw new Error(`Cannot connect to backend at ${API_URL}. Please check:
+1. Backend is running
+2. VITE_API_URL is set correctly in .env
+3. CORS is configured properly`);
+            }
+            throw error;
         }
     }
 
@@ -290,6 +341,21 @@ export default function FlowBuilder() {
                         <span className="title-suffix"> Flow Builder</span>
                     </h1>
                     <p className="builder-subtitle">Design your Chainlink workflow visually</p>
+                    {backendStatus === 'connected' && (
+                        <div className="backend-status connected" title={`Connected to: ${API_URL}`}>
+                            ✓ Backend Connected
+                        </div>
+                    )}
+                    {backendStatus === 'disconnected' && (
+                        <div className="backend-status disconnected" title={`Cannot connect to: ${API_URL}`}>
+                            ⚠️ Backend Disconnected - Check .env VITE_API_URL
+                        </div>
+                    )}
+                    {backendStatus === 'checking' && (
+                        <div className="backend-status checking" title="Checking backend connection...">
+                            ⏳ Checking backend...
+                        </div>
+                    )}
                 </div>
                 <div className="header-actions">
                     <button className="btn-back" onClick={() => navigate('/')}>
