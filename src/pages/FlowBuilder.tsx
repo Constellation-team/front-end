@@ -207,20 +207,22 @@ export default function FlowBuilder() {
             setSimulationOutput(prev => prev + 'Code generated successfully!\n');
             setSimulationOutput(prev => prev + 'Writing files to cre-orchestrator...\n');
 
-            // Write files to cre-orchestrator directory
-            const orchestratorPath = 'd:\\Proyectos\\Hackathon\\Chainlink\\cre-orchestrator';
+            // In production, the backend determines the orchestrator path internally.
+            // But we still pass a dummy path so the API matches the signature, or we can omit it if backend supports.
+            // For now, we will pass a relative indicator so the backend can use process.env.ORCHESTRATOR_PATH
+            const orchestratorPath = 'DEFAULT';
 
             // Write main.ts
-            await writeFile(`${orchestratorPath}\\workflows\\main.ts`, generatedFiles['main.ts']);
+            await writeFile(`workflows/main.ts`, generatedFiles['main.ts']);
             setSimulationOutput(prev => prev + '✓ main.ts written\n');
 
             // Write workflow.yaml
-            await writeFile(`${orchestratorPath}\\workflows\\workflow.yaml`, generatedFiles['workflow.yaml']);
+            await writeFile(`workflows/workflow.yaml`, generatedFiles['workflow.yaml']);
             setSimulationOutput(prev => prev + '✓ workflow.yaml written\n');
 
             // Write config files
-            await writeFile(`${orchestratorPath}\\workflows\\config.staging.json`, generatedFiles['config.staging.json']);
-            await writeFile(`${orchestratorPath}\\workflows\\config.production.json`, generatedFiles['config.production.json']);
+            await writeFile(`workflows/config.staging.json`, generatedFiles['config.staging.json']);
+            await writeFile(`workflows/config.production.json`, generatedFiles['config.production.json']);
             setSimulationOutput(prev => prev + '✓ Config files written\n\n');
 
             setSimulationOutput(prev => prev + 'Running simulation...\n');
