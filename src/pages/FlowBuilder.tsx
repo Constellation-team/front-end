@@ -272,6 +272,12 @@ export default function FlowBuilder() {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                
+                // Check if it's a production limitation error (403)
+                if (response.status === 403) {
+                    throw new Error(`Production Limitation:\n\n${errorData.message || errorData.error}\n\n${errorData.suggestion || ''}`);
+                }
+                
                 throw new Error(`Simulation failed: ${errorData.error || response.statusText}`);
             }
 
@@ -282,8 +288,21 @@ export default function FlowBuilder() {
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : 'Unknown error';
             
+            // Check if it's a production limitation error
+            if (errorMsg.includes('Production Limitation') || errorMsg.includes('disabled in production')) {
+                setSimulationOutput(prev => prev + `\n⚠️ ${errorMsg}\n\n`);
+                setSimulationOutput(prev => prev + `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
+                setSimulationOutput(prev => prev + `💡 Alternative: Use "Export Flow"\n`);
+                setSimulationOutput(prev => prev + `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`);
+                setSimulationOutput(prev => prev + `The "💾 Export Flow" button generates a complete\n`);
+                setSimulationOutput(prev => prev + `CRE project ZIP that you can:\n\n`);
+                setSimulationOutput(prev => prev + `1. Download and extract locally\n`);
+                setSimulationOutput(prev => prev + `2. Follow the QUICKSTART.md guide\n`);
+                setSimulationOutput(prev => prev + `3. Run locally with full CRE CLI access\n\n`);
+                setSimulationOutput(prev => prev + `This is the recommended workflow for production! ✨\n`);
+            }
             // Check if it's a connection error
-            if (errorMsg.includes('fetch') || errorMsg.includes('connect to backend')) {
+            else if (errorMsg.includes('fetch') || errorMsg.includes('connect to backend')) {
                 setSimulationOutput(prev => prev + `\n❌ Connection Error\n\n`);
                 setSimulationOutput(prev => prev + `Cannot connect to backend at: ${API_URL}\n\n`);
                 setSimulationOutput(prev => prev + `Possible solutions:\n`);
@@ -313,6 +332,12 @@ export default function FlowBuilder() {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                
+                // Check if it's a production limitation error (403)
+                if (response.status === 403) {
+                    throw new Error(`${errorData.error}\n\n${errorData.suggestion || ''}`);
+                }
+                
                 throw new Error(`Failed to write file: ${path}. ${errorData.error || ''}`);
             }
         } catch (error) {
