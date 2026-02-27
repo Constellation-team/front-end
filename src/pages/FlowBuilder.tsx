@@ -403,7 +403,7 @@ export default function FlowBuilder() {
                         🗑️ Clear
                     </button>
                     <button className="btn-test" onClick={testWorkflow}>
-                        🧪 Probar
+                        🧪 prove
                     </button>
                     <button className="btn-export" onClick={exportFlow}>
                         💾 Export Flow
