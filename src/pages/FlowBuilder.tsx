@@ -44,41 +44,6 @@ export default function FlowBuilder() {
     // Validation state
     const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-    // Backend connection state
-    const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
-
-    // Check backend connectivity on mount
-    useEffect(() => {
-        const checkBackend = async () => {
-            try {
-                // Create AbortController for timeout
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-                
-                const response = await fetch(`${API_URL}/health`, {
-                    method: 'GET',
-                    signal: controller.signal,
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    setBackendStatus('connected');
-                    console.log('✅ Backend connected:', API_URL);
-                } else {
-                    setBackendStatus('disconnected');
-                    console.error('❌ Backend responded with error:', response.status);
-                }
-            } catch (error) {
-                setBackendStatus('disconnected');
-                console.error('❌ Backend connection failed:', error instanceof Error ? error.message : 'Unknown error');
-                console.log('📍 Attempting to connect to:', API_URL);
-            }
-        };
-
-        checkBackend();
-    }, []);
-
     const onConnect = useCallback(
         (params: Connection) => {
             // Validate connection before creating it
