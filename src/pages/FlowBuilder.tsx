@@ -376,21 +376,6 @@ export default function FlowBuilder() {
                         <span className="title-suffix"> Flow Builder</span>
                     </h1>
                     <p className="builder-subtitle">Design your Chainlink workflow visually</p>
-                    {backendStatus === 'connected' && (
-                        <div className="backend-status connected" title={`Connected to: ${API_URL}`}>
-                            ✓ Backend Connected
-                        </div>
-                    )}
-                    {backendStatus === 'disconnected' && (
-                        <div className="backend-status disconnected" title={`Cannot connect to: ${API_URL}`}>
-                            ⚠️ Backend Disconnected - Check .env VITE_API_URL
-                        </div>
-                    )}
-                    {backendStatus === 'checking' && (
-                        <div className="backend-status checking" title="Checking backend connection...">
-                            ⏳ Checking backend...
-                        </div>
-                    )}
                 </div>
                 <div className="header-actions">
                     <button className="btn-back" onClick={() => navigate('/')}>
