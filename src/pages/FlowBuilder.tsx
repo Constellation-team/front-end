@@ -17,6 +17,7 @@ import NodeLibrary, { type NodeTemplate } from '../components/NodeLibrary';
 import CustomNode from '../components/nodes/CustomNode';
 import SimulationModal from '../components/SimulationModal';
 import SettingsModal from '../components/SettingsModal';
+import ChatBot from '../components/ChatBot';
 import { generateCRECode } from '../utils/codeGenerator';
 import { isValidConnection, canAddNode, validateWorkflow } from '../utils/flowValidation';
 import { generateProjectZip, downloadZip } from '../utils/projectTemplateGenerator';
@@ -237,12 +238,12 @@ export default function FlowBuilder() {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                
+
                 // Check if it's a production limitation error (403)
                 if (response.status === 403) {
                     throw new Error(`Production Limitation:\n\n${errorData.message || errorData.error}\n\n${errorData.suggestion || ''}`);
                 }
-                
+
                 throw new Error(`Simulation failed: ${errorData.error || response.statusText}`);
             }
 
@@ -252,7 +253,7 @@ export default function FlowBuilder() {
 
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-            
+
             // Check if it's a production limitation error
             if (errorMsg.includes('Production Limitation') || errorMsg.includes('disabled in production')) {
                 setSimulationOutput(prev => prev + `\n⚠️ ${errorMsg}\n\n`);
@@ -297,12 +298,12 @@ export default function FlowBuilder() {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                
+
                 // Check if it's a production limitation error (403)
                 if (response.status === 403) {
                     throw new Error(`${errorData.error}\n\n${errorData.suggestion || ''}`);
                 }
-                
+
                 throw new Error(`Failed to write file: ${path}. ${errorData.error || ''}`);
             }
         } catch (error) {
@@ -459,6 +460,8 @@ export default function FlowBuilder() {
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
             />
+
+            <ChatBot />
         </div>
     );
 }
