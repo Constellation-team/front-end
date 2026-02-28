@@ -396,7 +396,7 @@ export default function FlowBuilder() {
                             style={{ background: 'transparent' }}
                         />
                         <Controls style={{ background: 'rgba(10, 10, 15, 0.9)', border: '1px solid rgba(255, 255, 255, 0.1)' }} />
-                        <MiniMap style={miniMapStyle} nodeColor="#667eea" />
+                        <MiniMap position="top-right" style={miniMapStyle} nodeColor="#667eea" />
 
                         <Panel position="top-center" className="flow-panel">
                             <div className="flow-info">
@@ -425,29 +425,6 @@ export default function FlowBuilder() {
                             </Panel>
                         )}
 
-                        {nodes.length === 0 && (
-                            <Panel position="top-right" className="help-panel">
-                                <div className="help-header">
-                                    💡 <strong>Connection Rules</strong>
-                                </div>
-                                <div className="help-content">
-                                    <div className="help-rule">
-                                        <strong>1. Start with a Trigger</strong>
-                                        <span>Every workflow needs exactly one Trigger node (Cron or Webhook)</span>
-                                    </div>
-                                    <div className="help-rule">
-                                        <strong>2. Valid Flow Order</strong>
-                                        <span>Trigger → Data Source → Logic → Blockchain/AI</span>
-                                    </div>
-                                    <div className="help-rule">
-                                        <strong>3. Connection Rules</strong>
-                                        <span>• Triggers: can't receive connections</span>
-                                        <span>• Logic nodes: most flexible, can connect anywhere</span>
-                                        <span>• Invalid connections will be blocked</span>
-                                    </div>
-                                </div>
-                            </Panel>
-                        )}
                     </ReactFlow>
                 </div>
             </div>
