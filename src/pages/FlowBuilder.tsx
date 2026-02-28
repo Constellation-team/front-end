@@ -426,7 +426,7 @@ export default function FlowBuilder() {
                         )}
 
                         {nodes.length === 0 && (
-                            <Panel position="bottom-right" className="help-panel">
+                            <Panel position="top-right" className="help-panel">
                                 <div className="help-header">
                                     💡 <strong>Connection Rules</strong>
                                 </div>
