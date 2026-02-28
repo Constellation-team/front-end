@@ -24,5 +24,6 @@ dist-ssr
 *.sw?
 DEPLOYMENT.md
 
-
 .env
+
+CHATBOT_VERCEL_CONFIG.md
