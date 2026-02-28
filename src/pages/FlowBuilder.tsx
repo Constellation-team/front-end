@@ -158,6 +158,10 @@ export default function FlowBuilder() {
             'A Chainlink CRE workflow generated with CREator'
         );
 
+        if (projectDescription === null) {
+            return; // User cancelled
+        }
+
         try {
             // Generate the complete project ZIP
             const zipBlob = await generateProjectZip(
