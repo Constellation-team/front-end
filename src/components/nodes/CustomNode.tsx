@@ -38,6 +38,7 @@ function CustomNode({ data, selected }: NodeProps<NodeData>) {
                                 <div className="contract-address">
                                     {contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}
                                 </div>
+                                <div className="contract-action-hint">Click for details</div>
                             </div>
                         ) : (
                             <div className="contract-hint">Double-click to deploy</div>

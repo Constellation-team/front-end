@@ -1,0 +1,345 @@
+.contract-details-modal {
+  background: #1e1e1e;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.contract-details-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #333;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+}
+
+.contract-details-modal .modal-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contract-details-modal .contract-icon {
+  font-size: 32px;
+}
+
+.contract-details-modal .modal-title h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #fff;
+}
+
+.modal-tabs {
+  display: flex;
+  gap: 0;
+  background: #0d1117;
+  border-bottom: 2px solid #333;
+}
+
+.modal-tabs .tab {
+  flex: 1;
+  padding: 14px 20px;
+  background: transparent;
+  border: none;
+  color: #8b949e;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-bottom: 3px solid transparent;
+}
+
+.modal-tabs .tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #c9d1d9;
+}
+
+.modal-tabs .tab.active {
+  color: #58a6ff;
+  border-bottom-color: #58a6ff;
+  background: rgba(88, 166, 255, 0.1);
+}
+
+.contract-details-modal .modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Info Tab Styles */
+.info-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.info-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: #c9d1d9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-item label {
+  font-size: 12px;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #c9d1d9;
+  font-weight: 500;
+  padding: 8px 12px;
+  background: #0d1117;
+  border-radius: 6px;
+  border: 1px solid #30363d;
+}
+
+.info-value.network {
+  color: #7ee787;
+  border-color: rgba(126, 231, 135, 0.3);
+  background: rgba(126, 231, 135, 0.1);
+}
+
+.address-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.address {
+  flex: 1;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  color: #79b8ff;
+  word-break: break-all;
+}
+
+.copy-button {
+  padding: 6px 12px;
+  background: rgba(88, 166, 255, 0.1);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  border-radius: 6px;
+  color: #58a6ff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.copy-button:hover {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: rgba(88, 166, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.etherscan-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.etherscan-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.source-preview {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.source-preview pre {
+  margin: 0;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 12px;
+  color: #c9d1d9;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* ABI Tab Styles */
+.abi-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.abi-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.abi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.abi-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #c9d1d9;
+}
+
+.abi-preview {
+  max-height: 400px;
+  overflow-y: auto;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.abi-preview pre {
+  margin: 0;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 12px;
+  color: #79b8ff;
+  line-height: 1.6;
+}
+
+.abi-functions {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.abi-functions h4 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #c9d1d9;
+}
+
+.functions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.function-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.function-item:hover {
+  background: rgba(88, 166, 255, 0.05);
+  border-color: rgba(88, 166, 255, 0.3);
+}
+
+.function-item.function {
+  border-left: 3px solid #58a6ff;
+}
+
+.function-item.event {
+  border-left: 3px solid #f778ba;
+}
+
+.function-type {
+  padding: 4px 8px;
+  background: rgba(88, 166, 255, 0.1);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #58a6ff;
+}
+
+.function-item.event .function-type {
+  background: rgba(247, 120, 186, 0.1);
+  color: #f778ba;
+}
+
+.function-name {
+  flex: 1;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  color: #c9d1d9;
+  font-weight: 600;
+}
+
+.function-params {
+  font-size: 12px;
+  color: #8b949e;
+}
+
+/* Scrollbar Styles */
+.abi-preview::-webkit-scrollbar,
+.source-preview::-webkit-scrollbar {
+  width: 8px;
+}
+
+.abi-preview::-webkit-scrollbar-track,
+.source-preview::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.abi-preview::-webkit-scrollbar-thumb,
+.source-preview::-webkit-scrollbar-thumb {
+  background: rgba(88, 166, 255, 0.3);
+  border-radius: 4px;
+}
+
+.abi-preview::-webkit-scrollbar-thumb:hover,
+.source-preview::-webkit-scrollbar-thumb:hover {
+  background: rgba(88, 166, 255, 0.5);
+}

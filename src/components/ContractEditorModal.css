@@ -190,6 +190,79 @@
   font-family: 'Fira Code', 'Consolas', monospace;
 }
 
+.constructor-args-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: #0d1117;
+  border: 1px solid #333;
+  border-radius: 6px;
+}
+
+.constructor-args-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #c9d1d9;
+  font-weight: 600;
+}
+
+.arg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.arg-field label {
+  font-size: 13px;
+  color: #c9d1d9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arg-field label strong {
+  color: #79b8ff;
+  font-family: 'Fira Code', 'Consolas', monospace;
+}
+
+.arg-description {
+  font-size: 12px;
+  color: #8b949e;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.arg-field input,
+.arg-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  font-size: 13px;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  transition: all 0.2s ease;
+}
+
+.arg-field input:focus,
+.arg-field textarea:focus {
+  outline: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+.arg-field textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.arg-field input::placeholder,
+.arg-field textarea::placeholder {
+  color: #6e7681;
+}
+
 .connect-button {
   background: linear-gradient(135deg, #f6851b 0%, #e2761b 100%);
   color: #fff;

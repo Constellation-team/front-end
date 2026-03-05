@@ -72,7 +72,8 @@ export async function ensureSepoliaNetwork(): Promise<void> {
 
 export async function deployContract(
   abi: unknown[],
-  bytecode: string
+  bytecode: string,
+  constructorArgs: unknown[] = []
 ): Promise<DeployResult> {
   if (!window.ethereum) {
     throw new Error('MetaMask is not installed.');
@@ -90,7 +91,7 @@ export async function deployContract(
 
   // Cast abi to InterfaceAbi
   const factory = new ethers.ContractFactory(abi as ethers.InterfaceAbi, bytecode, signer);
-  const contract = await factory.deploy();
+  const contract = await factory.deploy(...constructorArgs);
   
   const deployTx = contract.deploymentTransaction();
   if (!deployTx) {

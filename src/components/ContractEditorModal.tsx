@@ -3,6 +3,7 @@ import { getTemplate, CONTRACT_TEMPLATES, extractContractName } from '../lib/blo
 import { compileSolidity } from '../lib/blockchain/compile';
 import type { CompilationResult } from '../lib/blockchain/compile';
 import { deployContract, getEtherscanUrl } from '../lib/blockchain/deploy';
+import { getConstructorConfig, parseConstructorArgs } from '../lib/blockchain/constructorArgs';
 import './ContractEditorModal.css';
 
 interface ContractEditorModalProps {
@@ -37,6 +38,7 @@ export default function ContractEditorModal({
   const [walletAddress, setWalletAddress] = useState('');
   const [deployedAddress, setDeployedAddress] = useState('');
   const [txHash, setTxHash] = useState('');
+  const [constructorArgs, setConstructorArgs] = useState<Record<string, string>>({});
 
   // Load template when modal opens or contract type changes
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function ContractEditorModal({
     }
     setDeployedAddress('');
     setTxHash('');
+    setConstructorArgs({});
   };
 
   const getTemplateName = (type: string): string => {
@@ -116,7 +119,16 @@ export default function ContractEditorModal({
     setErrorMessage('');
     
     try {
-      const result = await deployContract(compilationResult.abi, compilationResult.bytecode);
+      // Get constructor config and parse args
+      const templateName = getTemplateName(contractType);
+      const constructorConfig = getConstructorConfig(templateName);
+      const parsedArgs = parseConstructorArgs(constructorConfig, constructorArgs);
+      
+      const result = await deployContract(
+        compilationResult.abi,
+        compilationResult.bytecode,
+        parsedArgs
+      );
       setDeployedAddress(result.address);
       setTxHash(result.txHash);
       setDeploymentState('success');
@@ -211,6 +223,45 @@ export default function ContractEditorModal({
                     <strong>Connected:</strong>
                     <code>{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</code>
                   </div>
+                  
+                  {(() => {
+                    const templateName = getTemplateName(contractType);
+                    const constructorConfig = getConstructorConfig(templateName);
+                    return constructorConfig.args.length > 0 && (
+                      <div className="constructor-args-section">
+                        <h4>📝 Constructor Arguments</h4>
+                        {constructorConfig.args.map((arg) => (
+                          <div key={arg.name} className="arg-field">
+                            <label>
+                              <strong>{arg.name}</strong>
+                              {arg.description && <span className="arg-description">({arg.description})</span>}
+                            </label>
+                            {arg.type === 'address[]' ? (
+                              <textarea
+                                placeholder={arg.placeholder}
+                                value={constructorArgs[arg.name] || arg.defaultValue || ''}
+                                onChange={(e) => setConstructorArgs({
+                                  ...constructorArgs,
+                                  [arg.name]: e.target.value
+                                })}
+                                rows={3}
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                placeholder={arg.placeholder}
+                                value={constructorArgs[arg.name] || arg.defaultValue || ''}
+                                onChange={(e) => setConstructorArgs({
+                                  ...constructorArgs,
+                                  [arg.name]: e.target.value
+                                })}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                   
                   {deploymentState !== 'success' ? (
                     <button 

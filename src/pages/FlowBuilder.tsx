@@ -18,11 +18,13 @@ import CustomNode from '../components/nodes/CustomNode';
 import SimulationModal from '../components/SimulationModal';
 import SettingsModal from '../components/SettingsModal';
 import ContractEditorModal from '../components/ContractEditorModal';
+import ContractDetailsModal from '../components/ContractDetailsModal';
 import ChatBot from '../components/ChatBot';
 import { generateCRECode } from '../utils/codeGenerator';
 import { isValidConnection, canAddNode, validateWorkflow } from '../utils/flowValidation';
 import { generateProjectZip, downloadZip } from '../utils/projectTemplateGenerator';
-import { saveDeployedContract } from '../lib/blockchain/contractStorage';
+import { saveDeployedContract, getContractByNodeId } from '../lib/blockchain/contractStorage';
+import type { DeployedContract } from '../lib/blockchain/contractStorage';
 import { connectWallet, ensureSepoliaNetwork } from '../lib/blockchain/deploy';
 import { API_URL } from '../config';
 
@@ -53,6 +55,10 @@ export default function FlowBuilder() {
     // Wallet connection state
     const [walletAddress, setWalletAddress] = useState<string>('');
     const [walletConnecting, setWalletConnecting] = useState(false);
+
+    // Contract details modal state
+    const [isContractDetailsOpen, setIsContractDetailsOpen] = useState(false);
+    const [selectedContract, setSelectedContract] = useState<DeployedContract | null>(null);
 
     // Validation state
     const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -141,7 +147,18 @@ export default function FlowBuilder() {
 
     const onNodeClick = useCallback(
         (_event: React.MouseEvent, node: unknown) => {
-            setSelectedNode(node as never);
+            const clickedNode = node as Node;
+            setSelectedNode(clickedNode as never);
+            
+            // Check if this node has a deployed contract
+            const nodeData = clickedNode.data as { contractAddress?: string };
+            if (nodeData.contractAddress) {
+                const contract = getContractByNodeId(clickedNode.id);
+                if (contract) {
+                    setSelectedContract(contract);
+                    setIsContractDetailsOpen(true);
+                }
+            }
         },
         [setSelectedNode]
     );
@@ -540,6 +557,12 @@ export default function FlowBuilder() {
                 contractType={editingContractType}
                 onDeploy={handleContractDeploy}
                 preConnectedWallet={walletAddress}
+            />
+
+            <ContractDetailsModal
+                isOpen={isContractDetailsOpen}
+                onClose={() => setIsContractDetailsOpen(false)}
+                contract={selectedContract}
             />
 
             <ChatBot />
