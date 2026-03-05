@@ -85,6 +85,12 @@ The component maintains a static `NODE_CATALOG` that maps every supported node `
 | `functions` | Functions | chainlink | ⚡ |
 | `contract-call` | Contract Call | blockchain | 📝 |
 | `event-listener` | Event Listener | blockchain | 👂 |
+| `simple-storage` | SimpleStorage | blockchain | 📦 |
+| `erc20-token` | ERC20 Token | blockchain | 🪙 |
+| `erc721-nft` | ERC721 NFT | blockchain | 🖼️ |
+| `crowdfunding` | Crowdfunding | blockchain | 💰 |
+| `voting` | Voting | blockchain | 🗳️ |
+| `multisig-wallet` | MultiSig Wallet | blockchain | 🔐 |
 | `llm` | LLM | ai | 🤖 |
 
 ---

@@ -28,6 +28,12 @@ const NODE_CATALOG: Record<string, { label: string; category: NodeCategory; icon
     'functions': { label: 'Functions', category: 'chainlink', icon: '⚡' },
     'contract-call': { label: 'Contract Call', category: 'blockchain', icon: '📝' },
     'event-listener': { label: 'Event Listener', category: 'blockchain', icon: '👂' },
+    'simple-storage': { label: 'SimpleStorage', category: 'blockchain', icon: '📦' },
+    'erc20-token': { label: 'ERC20 Token', category: 'blockchain', icon: '🪙' },
+    'erc721-nft': { label: 'ERC721 NFT', category: 'blockchain', icon: '🖼️' },
+    'crowdfunding': { label: 'Crowdfunding', category: 'blockchain', icon: '💰' },
+    'voting': { label: 'Voting', category: 'blockchain', icon: '🗳️' },
+    'multisig-wallet': { label: 'MultiSig Wallet', category: 'blockchain', icon: '🔐' },
     'llm': { label: 'LLM', category: 'ai', icon: '🤖' },
 };
 
@@ -59,6 +65,12 @@ Tu trabajo principal es ayudar a los usuarios a diseñar workflows usando los no
 ⛓️ BLOCKCHAIN
   - 📝 Contract Call (type: "contract-call")
   - 👂 Event Listener (type: "event-listener")
+  - 📦 SimpleStorage Contract (type: "simple-storage") - Deploy basic storage contract
+  - 🪙 ERC20 Token (type: "erc20-token") - Deploy fungible token
+  - 🖼️ ERC721 NFT (type: "erc721-nft") - Deploy NFT collection
+  - 💰 Crowdfunding (type: "crowdfunding") - Deploy fundraising contract
+  - 🗳️ Voting (type: "voting") - Deploy voting system
+  - 🔐 MultiSig Wallet (type: "multisig-wallet") - Deploy multi-signature wallet
 
 🤖 AI
   - 🤖 LLM (type: "llm")
@@ -114,7 +126,7 @@ Si no sabes algo, dilo honestamente.`;
 const SUGGESTIONS = [
     '💡 Quiero un workflow que monitoree precios de cripto',
     '🔧 Diseña un workflow con Oracle y Contract Call',
-    '❓ ¿Qué nodos necesito para un workflow cross-chain?',
+    '🪙 Necesito deployar un token ERC20 cuando se cumpla una condición',
 ];
 
 export default function ChatBot() {
@@ -226,6 +238,7 @@ export default function ChatBot() {
                     label: catalogEntry.label,
                     category: catalogEntry.category,
                     icon: catalogEntry.icon,
+                    nodeType: nodeSpec.type, // Add node type for contract identification
                 },
             };
 
