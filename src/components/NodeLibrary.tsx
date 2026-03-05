@@ -32,6 +32,14 @@ const nodeTemplates: NodeTemplate[] = [
     // Blockchain
     { type: 'contract-call', label: 'Contract Call', category: 'blockchain', icon: '📝', description: 'Call smart contract' },
     { type: 'event-listener', label: 'Event Listener', category: 'blockchain', icon: '👂', description: 'Listen to events' },
+    
+    // Contract Deployment Nodes
+    { type: 'simple-storage', label: 'Simple Storage', category: 'blockchain', icon: '📦', description: 'Basic storage contract' },
+    { type: 'erc20-token', label: 'ERC20 Token', category: 'blockchain', icon: '🪙', description: 'Deploy fungible token' },
+    { type: 'erc721-nft', label: 'ERC721 NFT', category: 'blockchain', icon: '🖼️', description: 'Deploy NFT collection' },
+    { type: 'crowdfunding', label: 'Crowdfunding', category: 'blockchain', icon: '💰', description: 'Deploy fundraising campaign' },
+    { type: 'voting', label: 'Voting', category: 'blockchain', icon: '🗳️', description: 'Deploy voting system' },
+    { type: 'multisig-wallet', label: 'MultiSig Wallet', category: 'blockchain', icon: '🔐', description: 'Deploy multi-signature wallet' },
 
     // AI
     { type: 'llm', label: 'LLM', category: 'ai', icon: '🤖', description: 'AI language model' },

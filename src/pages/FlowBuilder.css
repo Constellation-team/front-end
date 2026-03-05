@@ -94,6 +94,7 @@
 .btn-back,
 .btn-clear,
 .btn-settings,
+.btn-wallet,
 .btn-test,
 .btn-export {
     padding: 0.8rem 1.6rem;
@@ -192,6 +193,50 @@
 
 .btn-export:hover::before {
     opacity: 1;
+}
+
+.btn-wallet {
+    background: linear-gradient(135deg, #f6851b 0%, #e2761b 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-wallet::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn-wallet:hover::before {
+    opacity: 1;
+}
+
+.btn-wallet:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(246, 133, 27, 0.6), 0 0 15px rgba(226, 118, 27, 0.4);
+}
+
+.btn-wallet:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-wallet.connected {
+    background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
+    border-color: rgba(67, 233, 123, 0.4);
+}
+
+.btn-wallet.connected:hover {
+    box-shadow: 0 10px 30px rgba(56, 249, 215, 0.4), 0 0 15px rgba(67, 233, 123, 0.3);
 }
 
 /* Content */

@@ -11,11 +11,13 @@
   },
   "dependencies": {
     "@types/jszip": "^3.4.0",
+    "ethers": "^6.16.0",
     "jszip": "^3.10.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
     "reactflow": "^11.11.4",
+    "solc": "^0.8.34",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

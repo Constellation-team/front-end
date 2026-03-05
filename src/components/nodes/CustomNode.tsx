@@ -15,9 +15,12 @@ const categoryColors: Record<string, string> = {
 
 function CustomNode({ data, selected }: NodeProps<NodeData>) {
     const bgGradient = categoryColors[data.category] || categoryColors.trigger;
+    const contractAddress = (data as { contractAddress?: string }).contractAddress;
+    const nodeType = (data as { nodeType?: string }).nodeType;
+    const isContractNode = nodeType && ['simple-storage', 'erc20-token', 'erc721-nft', 'crowdfunding', 'voting', 'multisig-wallet'].includes(nodeType);
 
     return (
-        <div className={`custom-node ${selected ? 'selected' : ''}`}>
+        <div className={`custom-node ${selected ? 'selected' : ''} ${contractAddress ? 'deployed' : ''}`}>
             <Handle type="target" position={Position.Left} className="custom-handle" />
 
             <div className="node-header" style={{ background: bgGradient }}>
@@ -27,6 +30,20 @@ function CustomNode({ data, selected }: NodeProps<NodeData>) {
             <div className="node-body">
                 <div className="node-label">{data.label}</div>
                 <div className="node-category">{data.category}</div>
+                {isContractNode && (
+                    <div className="node-hint">
+                        {contractAddress ? (
+                            <div className="contract-deployed">
+                                ✅ Deployed
+                                <div className="contract-address">
+                                    {contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="contract-hint">Double-click to deploy</div>
+                        )}
+                    </div>
+                )}
             </div>
 
             <Handle type="source" position={Position.Right} className="custom-handle" />

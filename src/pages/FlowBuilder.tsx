@@ -8,7 +8,7 @@ import ReactFlow, {
     ConnectionMode,
     Panel,
 } from 'reactflow';
-import type { Connection } from 'reactflow';
+import type { Connection, Node } from 'reactflow';
 import 'reactflow/dist/style.css';
 import './FlowBuilder.css';
 
@@ -17,10 +17,13 @@ import NodeLibrary, { type NodeTemplate } from '../components/NodeLibrary';
 import CustomNode from '../components/nodes/CustomNode';
 import SimulationModal from '../components/SimulationModal';
 import SettingsModal from '../components/SettingsModal';
+import ContractEditorModal from '../components/ContractEditorModal';
 import ChatBot from '../components/ChatBot';
 import { generateCRECode } from '../utils/codeGenerator';
 import { isValidConnection, canAddNode, validateWorkflow } from '../utils/flowValidation';
 import { generateProjectZip, downloadZip } from '../utils/projectTemplateGenerator';
+import { saveDeployedContract } from '../lib/blockchain/contractStorage';
+import { connectWallet, ensureSepoliaNetwork } from '../lib/blockchain/deploy';
 import { API_URL } from '../config';
 
 const nodeTypes = {
@@ -41,6 +44,15 @@ export default function FlowBuilder() {
 
     // Settings modal state
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+    // Contract editor modal state
+    const [isContractEditorOpen, setIsContractEditorOpen] = useState(false);
+    const [editingContractNodeId, setEditingContractNodeId] = useState<string>('');
+    const [editingContractType, setEditingContractType] = useState<string>('');
+
+    // Wallet connection state
+    const [walletAddress, setWalletAddress] = useState<string>('');
+    const [walletConnecting, setWalletConnecting] = useState(false);
 
     // Validation state
     const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -111,6 +123,7 @@ export default function FlowBuilder() {
                         label: template.label,
                         category: template.category,
                         icon: template.icon,
+                        nodeType: template.type, // Add node type for contract identification
                     },
                 };
 
@@ -136,6 +149,67 @@ export default function FlowBuilder() {
     const onPaneClick = useCallback(() => {
         setSelectedNode(null);
     }, [setSelectedNode]);
+
+    const onNodeDoubleClick = useCallback(
+        (_event: React.MouseEvent, node: Node) => {
+            // Check if this is a contract deployment node
+            const contractTypes = ['simple-storage', 'erc20-token', 'erc721-nft', 'crowdfunding', 'voting', 'multisig-wallet'];
+            const nodeData = node.data as { nodeType?: string };
+            
+            if (nodeData.nodeType && contractTypes.includes(nodeData.nodeType)) {
+                setEditingContractNodeId(node.id);
+                setEditingContractType(nodeData.nodeType);
+                setIsContractEditorOpen(true);
+            }
+        },
+        []
+    );
+
+    const handleWalletConnect = useCallback(async () => {
+        setWalletConnecting(true);
+        try {
+            await ensureSepoliaNetwork();
+            const address = await connectWallet();
+            setWalletAddress(address);
+        } catch (error) {
+            alert(error instanceof Error ? error.message : 'Failed to connect wallet');
+        } finally {
+            setWalletConnecting(false);
+        }
+    }, []);
+
+    const handleWalletDisconnect = useCallback(() => {
+        setWalletAddress('');
+    }, []);
+
+    const handleContractDeploy = useCallback(
+        (result: { address: string; txHash: string; abi: unknown[]; sourceCode: string; name: string }) => {
+            // Save to storage
+            saveDeployedContract({
+                nodeId: editingContractNodeId,
+                type: editingContractType,
+                name: result.name,
+                address: result.address,
+                txHash: result.txHash,
+                abi: result.abi,
+                sourceCode: result.sourceCode,
+                deployedAt: Date.now(),
+                network: 'sepolia',
+            });
+
+            // Update node data to show deployed address
+            useFlowStore.setState({
+                nodes: nodes.map(node => 
+                    node.id === editingContractNodeId
+                        ? { ...node, data: { ...node.data, contractAddress: result.address } }
+                        : node
+                ),
+            });
+
+            setIsContractEditorOpen(false);
+        },
+        [editingContractNodeId, editingContractType, nodes]
+    );
 
     const exportFlow = useCallback(async () => {
         if (nodes.length === 0) {
@@ -351,6 +425,23 @@ export default function FlowBuilder() {
                     <button className="btn-back" onClick={() => navigate('/')}>
                         ← Back to Home
                     </button>
+                    {!walletAddress ? (
+                        <button 
+                            className="btn-wallet" 
+                            onClick={handleWalletConnect}
+                            disabled={walletConnecting}
+                        >
+                            {walletConnecting ? '⏳ Connecting...' : '🦊 Connect Wallet'}
+                        </button>
+                    ) : (
+                        <button 
+                            className="btn-wallet connected" 
+                            onClick={handleWalletDisconnect}
+                            title={walletAddress}
+                        >
+                            ✅ {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                        </button>
+                    )}
                     <button className="btn-settings" onClick={() => setIsSettingsOpen(true)}>
                         ⚙️ Settings
                     </button>
@@ -377,6 +468,7 @@ export default function FlowBuilder() {
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}
                         onNodeClick={onNodeClick}
+                        onNodeDoubleClick={onNodeDoubleClick}
                         onPaneClick={onPaneClick}
                         onDrop={onDrop}
                         onDragOver={onDragOver}
@@ -440,6 +532,14 @@ export default function FlowBuilder() {
             <SettingsModal
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
+            />
+
+            <ContractEditorModal
+                isOpen={isContractEditorOpen}
+                onClose={() => setIsContractEditorOpen(false)}
+                contractType={editingContractType}
+                onDeploy={handleContractDeploy}
+                preConnectedWallet={walletAddress}
             />
 
             <ChatBot />

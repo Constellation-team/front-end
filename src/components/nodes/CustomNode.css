@@ -189,3 +189,55 @@
     box-shadow: 0 0 15px #00c6ff, 0 0 5px #ffffff;
     transform: scale(1.3);
 }
+
+/* Contract Node Styles */
+.node-hint {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contract-hint {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.contract-deployed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: #7ee787;
+    font-weight: 600;
+}
+
+.contract-address {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.65rem;
+    background: rgba(126, 231, 135, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(126, 231, 135, 0.3);
+    color: #7ee787;
+}
+
+.custom-node.deployed {
+    border-color: rgba(126, 231, 135, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(126, 231, 135, 0.2);
+}
+
+.custom-node.deployed::before {
+    background: linear-gradient(135deg, rgba(126, 231, 135, 0.3), transparent 40%, rgba(126, 231, 135, 0.1));
+}
+
+.custom-node.deployed:hover {
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(126, 231, 135, 0.4);
+}
