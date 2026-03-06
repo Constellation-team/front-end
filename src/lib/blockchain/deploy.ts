@@ -5,16 +5,6 @@ export interface DeployResult {
   txHash: string;
 }
 
-declare global {
-  interface Window {
-    ethereum?: ethers.Eip1193Provider & {
-      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-      on?: (event: string, handler: (...args: unknown[]) => void) => void;
-      removeListener?: (event: string, handler: (...args: unknown[]) => void) => void;
-    };
-  }
-}
-
 export const SEPOLIA_CHAIN_ID = '0xaa36a7'; // 11155111 in hex
 export const SEPOLIA_CHAIN_ID_DECIMAL = 11155111;
 
