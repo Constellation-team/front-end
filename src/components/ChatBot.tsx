@@ -28,7 +28,7 @@ const NODE_CATALOG: Record<string, { label: string; category: NodeCategory; icon
     'functions': { label: 'Functions', category: 'chainlink', icon: '⚡' },
     'contract-call': { label: 'Contract Call', category: 'blockchain', icon: '📝' },
     'event-listener': { label: 'Event Listener', category: 'blockchain', icon: '👂' },
-    'simple-storage': { label: 'SimpleStorage', category: 'blockchain', icon: '📦' },
+    'simple-storage': { label: 'Simple Storage', category: 'blockchain', icon: '📦' },
     'erc20-token': { label: 'ERC20 Token', category: 'blockchain', icon: '🪙' },
     'erc721-nft': { label: 'ERC721 NFT', category: 'blockchain', icon: '🖼️' },
     'crowdfunding': { label: 'Crowdfunding', category: 'blockchain', icon: '💰' },
@@ -37,13 +37,13 @@ const NODE_CATALOG: Record<string, { label: string; category: NodeCategory; icon
     'llm': { label: 'LLM', category: 'ai', icon: '🤖' },
 };
 
-const SYSTEM_PROMPT = `Eres el asistente experto de CREator, la herramienta visual para diseñar workflows de Chainlink CRE (Chainlink Runtime Environment).
+const SYSTEM_PROMPT = `You are the expert assistant for CREator, the visual tool for designing Chainlink CRE (Chainlink Runtime Environment) workflows.
 
-Tu trabajo principal es ayudar a los usuarios a diseñar workflows usando los nodos y reglas de conexión exactas de CREator.
+Your main job is to help users design workflows using CREator's exact nodes and connection rules.
 
-═══ NODOS DISPONIBLES ═══
+═══ AVAILABLE NODES ═══
 
-🎬 TRIGGER (Solo 1 por workflow, no recibe conexiones entrantes)
+🎬 TRIGGER (Only 1 per workflow, cannot receive incoming connections)
   - ⏰ Cron Trigger (type: "cron-trigger")
   - 🔔 Webhook (type: "webhook-trigger")
   - 🎯 Manual (type: "manual-trigger")
@@ -65,7 +65,7 @@ Tu trabajo principal es ayudar a los usuarios a diseñar workflows usando los no
 ⛓️ BLOCKCHAIN
   - 📝 Contract Call (type: "contract-call")
   - 👂 Event Listener (type: "event-listener")
-  - 📦 SimpleStorage Contract (type: "simple-storage") - Deploy basic storage contract
+  - 📦 Simple Storage Contract (type: "simple-storage") - Deploy basic storage contract
   - 🪙 ERC20 Token (type: "erc20-token") - Deploy fungible token
   - 🖼️ ERC721 NFT (type: "erc721-nft") - Deploy NFT collection
   - 💰 Crowdfunding (type: "crowdfunding") - Deploy fundraising contract
@@ -75,30 +75,30 @@ Tu trabajo principal es ayudar a los usuarios a diseñar workflows usando los no
 🤖 AI
   - 🤖 LLM (type: "llm")
 
-═══ REGLAS DE CONEXIÓN (OBLIGATORIAS) ═══
+═══ CONNECTION RULES (REQUIRED) ═══
 
 🎬 Trigger     → Data Source, Logic, Chainlink, Blockchain, AI
 📡 Data Source  → Logic, Chainlink, Blockchain, AI
 🔗 Chainlink   → Logic, Blockchain, AI
-🧠 Logic       → Logic, Chainlink, Blockchain, AI, Data Source (el más flexible)
+🧠 Logic       → Logic, Chainlink, Blockchain, AI, Data Source (most flexible)
 ⛓️ Blockchain  → Logic, AI
 🤖 AI          → Logic, Blockchain
 
-Reglas adicionales:
-- Solo 1 Trigger por workflow
-- Triggers NO reciben conexiones entrantes
-- Todo workflow debe empezar con un Trigger
+Additional rules:
+- Only 1 Trigger per workflow
+- Triggers CANNOT receive incoming connections
+- All workflows must start with a Trigger
 
-═══ INSTRUCCIONES ═══
+═══ INSTRUCTIONS ═══
 
-Cuando el usuario proponga una idea de workflow CRE:
+When the user proposes a CRE workflow idea:
 
-1. **Nodos necesarios**: Lista los nodos específicos que se necesitan
-2. **Flujo de conexiones**: Muestra el flujo paso a paso con emojis y flechas →
-3. **Explicación de cada paso**: Describe qué hace cada nodo en el flujo
-4. **Validación**: Asegúrate de que TODAS las conexiones respeten las reglas
+1. **Required nodes**: List the specific nodes needed
+2. **Connection flow**: Show the step-by-step flow with emojis and arrows →
+3. **Explanation of each step**: Describe what each node does in the flow
+4. **Validation**: Ensure ALL connections respect the rules
 
-5. **IMPORTANTE - Bloque JSON**: Al final de CADA respuesta que involucre un diseño de workflow, SIEMPRE incluye un bloque JSON con el esquema exacto. Usa EXACTAMENTE este formato con la etiqueta json-workflow:
+5. **IMPORTANT - JSON Block**: At the end of EVERY response involving a workflow design, ALWAYS include a JSON block with the exact schema. Use EXACTLY this format with the json-workflow tag:
 
 \`\`\`json-workflow
 {
@@ -116,17 +116,17 @@ Cuando el usuario proponga una idea de workflow CRE:
 }
 \`\`\`
 
-Los "type" DEBEN ser exactamente uno de los types listados arriba. Los "edges" usan los índices del array "nodes" (0-based). Cada "from"/"to" es el índice del nodo en el array.
+The "type" values MUST be exactly one of the types listed above. The "edges" use the "nodes" array indices (0-based). Each "from"/"to" is the index of the node in the array.
 
-Responde siempre en español a menos que el usuario escriba en otro idioma.
-Sé conciso pero completo.
-Si no sabes algo, dilo honestamente.`;
+Always respond in the user's language.
+Be concise but complete.
+If you don't know something, say so honestly.`;
 
 
 const SUGGESTIONS = [
-    '💡 Quiero un workflow que monitoree precios de cripto',
-    '🔧 Diseña un workflow con Oracle y Contract Call',
-    '🪙 Necesito deployar un token ERC20 cuando se cumpla una condición',
+    '💡 I want a workflow that monitors crypto prices',
+    '🔧 Design a workflow with Oracle and Contract Call',
+    '🪙 I need to deploy an ERC20 token when a condition is met',
 ];
 
 export default function ChatBot() {
@@ -197,7 +197,7 @@ export default function ChatBot() {
         // Ask user confirmation if canvas has nodes
         const currentNodes = useFlowStore.getState().nodes;
         if (currentNodes.length > 0) {
-            const proceed = confirm('⚠️ El canvas tiene nodos existentes.\n¿Quieres limpiar el canvas y crear el nuevo workflow?');
+            const proceed = confirm('⚠️ The canvas has existing nodes.\nDo you want to clear the canvas and create the new workflow?');
             if (!proceed) {
                 setIsBuilding(false);
                 return;
@@ -306,19 +306,19 @@ export default function ChatBot() {
             });
 
             if (!response.ok) {
-                const errData = await response.json().catch(() => ({ error: 'Error desconocido' }));
+                const errData = await response.json().catch(() => ({ error: 'Unknown error' }));
                 throw new Error(errData.error || `Error ${response.status}`);
             }
 
             const data = await response.json();
-            const assistantContent = data.choices?.[0]?.message?.content || 'Sin respuesta del modelo.';
+            const assistantContent = data.choices?.[0]?.message?.content || 'No response from model.';
 
             setMessages(prev => [
                 ...prev,
                 { role: 'assistant', content: assistantContent },
             ]);
         } catch (err) {
-            const errorMsg = err instanceof Error ? err.message : 'Error desconocido';
+            const errorMsg = err instanceof Error ? err.message : 'Unknown error';
             setError(errorMsg);
         } finally {
             setIsLoading(false);
@@ -480,7 +480,7 @@ export default function ChatBot() {
             <button
                 className={`chatbot-toggle ${isOpen ? 'open' : ''}`}
                 onClick={handleToggle}
-                title="Chat con IA"
+                title="Chat with AI"
                 id="chatbot-toggle-btn"
             >
                 <span className="toggle-icon">{isOpen ? '✕' : '🤖'}</span>
@@ -501,7 +501,7 @@ export default function ChatBot() {
                                 </span>
                             </div>
                         </div>
-                        <button className="chatbot-close" onClick={handleClose} title="Cerrar chat">
+                        <button className="chatbot-close" onClick={handleClose} title="Close chat">
                             ✕
                         </button>
                     </div>
@@ -511,9 +511,9 @@ export default function ChatBot() {
                         {messages.length === 0 && !isLoading && (
                             <div className="chat-welcome">
                                 <span className="welcome-icon">🚀</span>
-                                <h4>¡Hola! Soy tu asistente CREator</h4>
+                                <h4>Hi! I'm your CREator assistant</h4>
                                 <p>
-                                    Pregúntame sobre Chainlink CRE, workflows, smart contracts o cualquier cosa relacionada con blockchain.
+                                    Ask me about Chainlink CRE, workflows, smart contracts, or anything blockchain-related.
                                 </p>
                                 <div className="chat-suggestions">
                                     {SUGGESTIONS.map((suggestion, idx) => (
@@ -550,10 +550,10 @@ export default function ChatBot() {
                                                 {isBuilding ? (
                                                     <>
                                                         <span className="build-spinner"></span>
-                                                        Construyendo...
+                                                        Building...
                                                     </>
                                                 ) : (
-                                                    <>🔨 Crear en Canvas</>
+                                                    <>🔨 Build on Canvas</>
                                                 )}
                                             </button>
                                         )}
@@ -577,7 +577,7 @@ export default function ChatBot() {
                             <div className="chat-error">
                                 ❌ {error}
                                 <br />
-                                <button onClick={retryLastMessage}>🔄 Reintentar</button>
+                                <button onClick={retryLastMessage}>🔄 Retry</button>
                             </div>
                         )}
 
@@ -593,7 +593,7 @@ export default function ChatBot() {
                                 value={input}
                                 onChange={handleInputChange}
                                 onKeyDown={handleKeyDown}
-                                placeholder="Escribe tu pregunta..."
+                                placeholder="Type your question..."
                                 rows={1}
                                 disabled={isLoading}
                                 id="chatbot-input"
@@ -602,7 +602,7 @@ export default function ChatBot() {
                                 type="submit"
                                 className="chatbot-send"
                                 disabled={!input.trim() || isLoading}
-                                title="Enviar mensaje"
+                                title="Send message"
                                 id="chatbot-send-btn"
                             >
                                 ➤

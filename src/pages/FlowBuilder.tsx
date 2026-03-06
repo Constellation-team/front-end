@@ -1,5 +1,7 @@
 import { useCallback, useRef, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAccount } from 'wagmi';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import ReactFlow, {
     Background,
     Controls,
@@ -25,7 +27,6 @@ import { isValidConnection, canAddNode, validateWorkflow } from '../utils/flowVa
 import { generateProjectZip, downloadZip } from '../utils/projectTemplateGenerator';
 import { saveDeployedContract, getContractByNodeId, getDeployedContracts } from '../lib/blockchain/contractStorage';
 import type { DeployedContract } from '../lib/blockchain/contractStorage';
-import { connectWallet, ensureSepoliaNetwork } from '../lib/blockchain/deploy';
 import { API_URL } from '../config';
 
 const nodeTypes = {
@@ -36,6 +37,7 @@ export default function FlowBuilder() {
     const navigate = useNavigate();
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
     const { nodes, edges, onNodesChange, onEdgesChange, addNode, setSelectedNode } = useFlowStore();
+    const { address: walletAddress } = useAccount();
 
     const nodeId = useRef(0);
 
@@ -51,10 +53,6 @@ export default function FlowBuilder() {
     const [isContractEditorOpen, setIsContractEditorOpen] = useState(false);
     const [editingContractNodeId, setEditingContractNodeId] = useState<string>('');
     const [editingContractType, setEditingContractType] = useState<string>('');
-
-    // Wallet connection state
-    const [walletAddress, setWalletAddress] = useState<string>('');
-    const [walletConnecting, setWalletConnecting] = useState(false);
 
     // Contract details modal state
     const [isContractDetailsOpen, setIsContractDetailsOpen] = useState(false);
@@ -181,23 +179,6 @@ export default function FlowBuilder() {
         },
         []
     );
-
-    const handleWalletConnect = useCallback(async () => {
-        setWalletConnecting(true);
-        try {
-            await ensureSepoliaNetwork();
-            const address = await connectWallet();
-            setWalletAddress(address);
-        } catch (error) {
-            alert(error instanceof Error ? error.message : 'Failed to connect wallet');
-        } finally {
-            setWalletConnecting(false);
-        }
-    }, []);
-
-    const handleWalletDisconnect = useCallback(() => {
-        setWalletAddress('');
-    }, []);
 
     const handleContractDeploy = useCallback(
         (result: { address: string; txHash: string; abi: unknown[]; sourceCode: string; name: string }) => {
@@ -453,23 +434,9 @@ export default function FlowBuilder() {
                     <button className="btn-back" onClick={() => navigate('/')}>
                         ← Back to Home
                     </button>
-                    {!walletAddress ? (
-                        <button 
-                            className="btn-wallet" 
-                            onClick={handleWalletConnect}
-                            disabled={walletConnecting}
-                        >
-                            {walletConnecting ? '⏳ Connecting...' : '🦊 Connect Wallet'}
-                        </button>
-                    ) : (
-                        <button 
-                            className="btn-wallet connected" 
-                            onClick={handleWalletDisconnect}
-                            title={walletAddress}
-                        >
-                            ✅ {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-                        </button>
-                    )}
+                    <div className="wallet-container">
+                        <ConnectButton chainStatus="icon" showBalance={false} />
+                    </div>
                     <button className="btn-settings" onClick={() => setIsSettingsOpen(true)}>
                         ⚙️ Settings
                     </button>

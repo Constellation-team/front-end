@@ -20,7 +20,7 @@ export const SEPOLIA_CHAIN_ID_DECIMAL = 11155111;
 
 export async function connectWallet(): Promise<string> {
   if (!window.ethereum) {
-    throw new Error('MetaMask is not installed. Please install MetaMask to continue.');
+    throw new Error('No wallet detected. Please install MetaMask or another Web3 wallet.');
   }
 
   const accounts = (await window.ethereum.request({
@@ -28,7 +28,7 @@ export async function connectWallet(): Promise<string> {
   })) as string[];
 
   if (!accounts || accounts.length === 0) {
-    throw new Error('No accounts found. Please unlock MetaMask.');
+    throw new Error('No accounts found. Please unlock your wallet.');
   }
 
   return accounts[0];
@@ -36,7 +36,7 @@ export async function connectWallet(): Promise<string> {
 
 export async function ensureSepoliaNetwork(): Promise<void> {
   if (!window.ethereum) {
-    throw new Error('MetaMask is not installed.');
+    throw new Error('No wallet detected. Please connect your wallet first.');
   }
 
   const chainId = (await window.ethereum.request({ method: 'eth_chainId' })) as string;
@@ -64,7 +64,7 @@ export async function ensureSepoliaNetwork(): Promise<void> {
           ],
         });
       } else {
-        throw new Error('Failed to switch to Sepolia network. Please switch manually in MetaMask.');
+        throw new Error('Failed to switch to Sepolia network. Please switch manually.');
       }
     }
   }
@@ -76,7 +76,7 @@ export async function deployContract(
   constructorArgs: unknown[] = []
 ): Promise<DeployResult> {
   if (!window.ethereum) {
-    throw new Error('MetaMask is not installed.');
+    throw new Error('No wallet detected. Please connect your wallet first.');
   }
 
   if (!bytecode || bytecode === '0x') {

@@ -2,11 +2,9 @@
 
 .landing-page {
     min-height: 100vh;
-    height: 100%;
     background: #0a0a0f;
     color: #ffffff;
     overflow-x: hidden;
-    overflow-y: auto;
     position: relative;
 }
 
@@ -253,7 +251,7 @@
 
 .hero-content {
     position: relative;
-    z-index: 1;
+    z-index: 10;
     text-align: center;
     max-width: 900px;
 }
@@ -348,6 +346,8 @@
 
 /* Features Section */
 .features {
+    position: relative;
+    z-index: 10;
     padding: 8rem 2rem;
     max-width: 1400px;
     margin: 0 auto;
@@ -408,6 +408,8 @@
 
 /* How It Works */
 .how-it-works {
+    position: relative;
+    z-index: 10;
     padding: 8rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
@@ -448,6 +450,8 @@
 
 /* CTA Section */
 .cta-section {
+    position: relative;
+    z-index: 10;
     padding: 5rem 10rem 8rem;
     text-align: center;
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
@@ -474,6 +478,7 @@
 /* Footer */
 .footer {
     position: relative;
+    z-index: 10;
     background: rgba(10, 10, 15, 0.8);
     backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);

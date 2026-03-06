@@ -91,6 +91,18 @@
     gap: 1.2rem;
 }
 
+/* RainbowKit wallet button styling */
+.wallet-container {
+    display: flex;
+    align-items: center;
+}
+
+.wallet-container button {
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    backdrop-filter: blur(10px) !important;
+}
+
 .btn-back,
 .btn-clear,
 .btn-settings,

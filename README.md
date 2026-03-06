@@ -4,6 +4,20 @@ A modern, visual workflow builder for Chainlink Runtime Environment (CRE) - like
 
 ## ✨ Features
 
+### Wallet Integration (NEW!)
+- **RainbowKit Integration**: Beautiful wallet connection UI
+- **Multi-Wallet Support**: MetaMask, WalletConnect, Coinbase, Rainbow, and more
+- **Persistent Connection**: Wallet stays connected across sessions
+- **Auto Network Switching**: Automatic Sepolia testnet detection and switching
+- **Chain Status UI**: Visual network indicator in header
+
+### Smart Contract Deployment (NEW!)
+- **6 Contract Templates**: SimpleStorage, ERC20, ERC721, Crowdfunding, Voting, MultiSig
+- **In-Node Editor**: Edit, compile, and deploy contracts directly from nodes
+- **Constructor Arguments**: Dynamic forms for contracts requiring initialization
+- **Contract Details Modal**: View ABI, address, Etherscan links
+- **Deployment Tracking**: Deployed contracts saved and exported with workflows
+
 ### Visual Flow Builder
 - **Drag & Drop Interface**: 16 pre-built node types across 6 categories
 - **Real-time Validation**: Connection rules prevent invalid workflows
@@ -11,7 +25,7 @@ A modern, visual workflow builder for Chainlink Runtime Environment (CRE) - like
   - 🎯 Triggers (Cron, Webhook)
   - 📊 Data Sources (HTTP, Database, File)
   - 🔗 Chainlink Services (Data Feeds, CCIP, Functions, Streams)
-  - ⛓️ Blockchain (Contract Calls, Events, Deploy)
+  - ⛓️ Blockchain (Contract Calls, Events, Deploy - with smart contract nodes!)
   - 🧮 Logic (If/Else, Transform, Merge)
   - 🤖 AI (LLM Integration)
 
@@ -46,7 +60,8 @@ A modern, visual workflow builder for Chainlink Runtime Environment (CRE) - like
 ### Prerequisites
 - Node.js 18+ or Bun
 - CRE CLI installed globally
-- MetaMask wallet with Sepolia ETH
+- Web3 wallet (MetaMask, Rainbow, Coinbase Wallet, etc.)
+- Sepolia ETH for contract deployments
 
 ### Installation
 
@@ -56,12 +71,19 @@ A modern, visual workflow builder for Chainlink Runtime Environment (CRE) - like
    npm install
    ```
 
-2. **Start development server**:
+2. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your WalletConnect Project ID
+   # Get it from https://cloud.walletconnect.com
+   ```
+
+3. **Start development server**:
    ```bash
    npm run dev
    ```
 
-3. **Open in browser**: http://localhost:5173
+4. **Open in browser**: http://localhost:5173
 
 ### Backend Setup
 
@@ -201,14 +223,24 @@ front-end/
 - **Frontend**: React 19 + Vite 7.3.1 + TypeScript
 - **Flow Editor**: React Flow 11.11.4
 - **State**: Zustand 5.0.11
+- **Wallet**: RainbowKit 2.x + wagmi 2.x + viem 2.x
+- **Blockchain**: ethers.js 6.16.0
+- **Smart Contracts**: Solidity 0.8.20 (compiled via backend API)
 - **ZIP**: JSZip 3.10.1
 - **Routing**: React Router 7.13.0
-- **Backend**: Node.js + Express
+- **Backend**: Node.js + Express + solc 0.8.34
 - **CRE**: @chainlink/cre-sdk 1.0.9
+
+## 📚 Documentation
+
+- **[RainbowKit Integration Guide](./documentation/RAINBOWKIT.md)** - Complete wallet setup
+- **[ChatBot Documentation](./documentation/CHATBOT.md)** - AI assistant features
 
 ## 🔒 Security
 
 - **Private Keys**: Stored locally in .env files (never sent to external servers)
+- **Wallet Connection**: Secure connection via RainbowKit (supports hardware wallets)
+- **Contract Compilation**: Handled by backend API (secure Solidity compilation)
 - **Validation**: All connections validated before workflow generation
 - **Local Processing**: Code generation happens client-side
 - **Git Safety**: .env files automatically ignored
