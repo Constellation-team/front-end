@@ -4,6 +4,8 @@ import { compileSolidity } from '../lib/blockchain/compile';
 import type { CompilationResult } from '../lib/blockchain/compile';
 import { deployContract, getEtherscanUrl } from '../lib/blockchain/deploy';
 import { getConstructorConfig, parseConstructorArgs } from '../lib/blockchain/constructorArgs';
+import { MdCheckCircle, MdError } from 'react-icons/md';
+import { FaBox } from 'react-icons/fa';
 import './ContractEditorModal.css';
 
 interface ContractEditorModalProps {
@@ -83,9 +85,9 @@ export default function ContractEditorModal({
     return mapping[type] || 'SimpleStorage';
   };
 
-  const getContractIcon = (type: string): string => {
+  const getContractIcon = (type: string): React.ReactElement => {
     const template = CONTRACT_TEMPLATES.find((t: { name: string }) => getTemplateName(type) === t.name);
-    return template?.icon || '📦';
+    return template?.icon ? <span>{template.icon}</span> : <FaBox />;
   };
 
   const handleCompile = async () => {
@@ -185,10 +187,10 @@ export default function ContractEditorModal({
           {compilationState !== 'idle' && (
             <div className={`status-box ${compilationState}`}>
               {compilationState === 'compiling' && '⏳ Compiling contract...'}
-              {compilationState === 'success' && '✅ Compilation successful!'}
+              {compilationState === 'success' && <><MdCheckCircle style={{ color: '#10b981', marginRight: '6px' }} /> Compilation successful!</>}
               {compilationState === 'error' && (
                 <>
-                  <strong>❌ Compilation failed:</strong>
+                  <strong><MdError style={{ color: '#ef4444', marginRight: '6px' }} /> Compilation failed:</strong>
                   <pre>{errorMessage}</pre>
                 </>
               )}
@@ -273,7 +275,7 @@ export default function ContractEditorModal({
                     </button>
                   ) : (
                     <div className="deployment-success">
-                      <div className="success-header">✅ Contract Deployed!</div>
+                      <div className="success-header"><MdCheckCircle style={{ color: '#10b981', marginRight: '6px' }} /> Contract Deployed!</div>
                       <div className="deployment-info">
                         <div className="info-row">
                           <strong>Contract:</strong>
@@ -306,7 +308,7 @@ export default function ContractEditorModal({
 
               {deploymentState === 'error' && (
                 <div className="status-box error">
-                  <strong>❌ Deployment failed:</strong>
+                  <strong><MdError style={{ color: '#ef4444', marginRight: '6px' }} /> Deployment failed:</strong>
                   <p>{errorMessage}</p>
                 </div>
               )}

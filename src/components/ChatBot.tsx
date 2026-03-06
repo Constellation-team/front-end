@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useFlowStore } from '../store/flowStore';
 import type { NodeCategory } from '../store/flowStore';
+import { FaRobot, FaUser, FaTimes, FaRocket, FaHammer, FaPaperPlane } from 'react-icons/fa';
+import { MdError } from 'react-icons/md';
+import { FaSyncAlt, FaLightbulb } from 'react-icons/fa';
 import './ChatBot.css';
 
 interface Message {
@@ -124,9 +127,9 @@ If you don't know something, say so honestly.`;
 
 
 const SUGGESTIONS = [
-    '💡 I want a workflow that monitors crypto prices',
-    '🔧 Design a workflow with Oracle and Contract Call',
-    '🪙 I need to deploy an ERC20 token when a condition is met',
+    'I want a workflow that monitors crypto prices',
+    'Design a workflow with Oracle and Contract Call',
+    'I need to deploy an ERC20 token when a condition is met',
 ];
 
 export default function ChatBot() {
@@ -483,7 +486,7 @@ export default function ChatBot() {
                 title="Chat with AI"
                 id="chatbot-toggle-btn"
             >
-                <span className="toggle-icon">{isOpen ? '✕' : '🤖'}</span>
+                <span className="toggle-icon">{isOpen ? <FaTimes /> : <FaRobot />}</span>
             </button>
 
             {/* Chat Window */}
@@ -492,7 +495,7 @@ export default function ChatBot() {
                     {/* Header */}
                     <div className="chatbot-header">
                         <div className="chatbot-header-info">
-                            <div className="chatbot-avatar">🤖</div>
+                            <div className="chatbot-avatar"><FaRobot /></div>
                             <div className="chatbot-header-text">
                                 <h3>CREator AI Assistant</h3>
                                 <span>
@@ -502,7 +505,7 @@ export default function ChatBot() {
                             </div>
                         </div>
                         <button className="chatbot-close" onClick={handleClose} title="Close chat">
-                            ✕
+                            <FaTimes />
                         </button>
                     </div>
 
@@ -510,7 +513,7 @@ export default function ChatBot() {
                     <div className="chatbot-messages">
                         {messages.length === 0 && !isLoading && (
                             <div className="chat-welcome">
-                                <span className="welcome-icon">🚀</span>
+                                <span className="welcome-icon"><FaRocket /></span>
                                 <h4>Hi! I'm your CREator assistant</h4>
                                 <p>
                                     Ask me about Chainlink CRE, workflows, smart contracts, or anything blockchain-related.
@@ -522,7 +525,7 @@ export default function ChatBot() {
                                             className="suggestion-btn"
                                             onClick={() => sendMessage(suggestion)}
                                         >
-                                            💬 {suggestion}
+                                            <FaLightbulb style={{ marginRight: '6px' }} /> {suggestion}
                                         </button>
                                     ))}
                                 </div>
@@ -535,7 +538,7 @@ export default function ChatBot() {
                             return (
                                 <div key={idx} className={`chat-message ${msg.role}`}>
                                     <div className="message-avatar">
-                                        {msg.role === 'user' ? '👤' : '🤖'}
+                                        {msg.role === 'user' ? <FaUser /> : <FaRobot />}
                                     </div>
                                     <div className="message-content">
                                         {renderContent(msg.content)}
@@ -553,7 +556,7 @@ export default function ChatBot() {
                                                         Building...
                                                     </>
                                                 ) : (
-                                                    <>🔨 Build on Canvas</>
+                                                    <><FaHammer style={{ marginRight: '6px' }} /> Build on Canvas</>
                                                 )}
                                             </button>
                                         )}
@@ -564,7 +567,7 @@ export default function ChatBot() {
 
                         {isLoading && (
                             <div className="chat-message assistant">
-                                <div className="message-avatar">🤖</div>
+                                <div className="message-avatar"><FaRobot /></div>
                                 <div className="typing-indicator">
                                     <span></span>
                                     <span></span>
@@ -575,9 +578,9 @@ export default function ChatBot() {
 
                         {error && (
                             <div className="chat-error">
-                                ❌ {error}
+                                <MdError style={{ marginRight: '6px' }} /> {error}
                                 <br />
-                                <button onClick={retryLastMessage}>🔄 Retry</button>
+                                <button onClick={retryLastMessage}><FaSyncAlt style={{ marginRight: '6px' }} /> Retry</button>
                             </div>
                         )}
 
@@ -605,7 +608,7 @@ export default function ChatBot() {
                                 title="Send message"
                                 id="chatbot-send-btn"
                             >
-                                ➤
+                                <FaPaperPlane />
                             </button>
                         </div>
                     </form>

@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import type { NodeProps } from 'reactflow';
 import type { NodeData } from '../../store/flowStore';
+import { IconMapper, MdCheckCircle } from '../IconMapper';
 import './CustomNode.css';
 
 const categoryColors: Record<string, string> = {
@@ -24,7 +25,7 @@ function CustomNode({ data, selected }: NodeProps<NodeData>) {
             <Handle type="target" position={Position.Left} className="custom-handle" />
 
             <div className="node-header" style={{ background: bgGradient }}>
-                <span className="node-icon">{data.icon}</span>
+                <span className="node-icon"><IconMapper icon={data.icon} size={24} /></span>
             </div>
 
             <div className="node-body">
@@ -34,7 +35,7 @@ function CustomNode({ data, selected }: NodeProps<NodeData>) {
                     <div className="node-hint">
                         {contractAddress ? (
                             <div className="contract-deployed">
-                                ✅ Deployed
+                                <MdCheckCircle style={{ color: '#10b981', marginRight: '4px' }} /> Deployed
                                 <div className="contract-address">
                                     {contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}
                                 </div>

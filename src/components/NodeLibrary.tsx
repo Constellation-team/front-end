@@ -1,4 +1,6 @@
 import type { NodeCategory } from '../store/flowStore';
+import { IconMapper } from './IconMapper';
+import { FaPlay, FaDatabase, FaLink, FaBrain, FaRobot, FaCopy } from 'react-icons/fa';
 import './NodeLibrary.css';
 
 export interface NodeTemplate {
@@ -52,13 +54,13 @@ interface NodeLibraryProps {
 export default function NodeLibrary({ onDragStart }: NodeLibraryProps) {
     const categories: NodeCategory[] = ['trigger', 'datasource', 'logic', 'chainlink', 'blockchain', 'ai'];
 
-    const categoryLabels: Record<NodeCategory, string> = {
-        trigger: '🎬 Triggers',
-        datasource: '📡 Data Sources',
-        logic: '🧠 Logic',
-        chainlink: '🔗 Chainlink',
-        blockchain: '⛓️ Blockchain',
-        ai: '🤖 AI',
+    const categoryLabels: Record<NodeCategory, React.ReactElement> = {
+        trigger: <><FaPlay style={{ marginRight: '8px' }} />Triggers</>,
+        datasource: <><FaDatabase style={{ marginRight: '8px' }} />Data Sources</>,
+        logic: <><FaBrain style={{ marginRight: '8px' }} />Logic</>,
+        chainlink: <><FaLink style={{ marginRight: '8px' }} />Chainlink</>,
+        blockchain: <><FaLink style={{ marginRight: '8px' }} />Blockchain</>,
+        ai: <><FaRobot style={{ marginRight: '8px' }} />AI</>,
     };
 
     return (
@@ -84,7 +86,7 @@ export default function NodeLibrary({ onDragStart }: NodeLibraryProps) {
                                         draggable
                                         onDragStart={(e) => onDragStart(e, template)}
                                     >
-                                        <span className="template-icon">{template.icon}</span>
+                                        <span className="template-icon"><IconMapper icon={template.icon} size={20} /></span>
                                         <div className="template-info">
                                             <div className="template-label">{template.label}</div>
                                             <div className="template-description">{template.description}</div>
@@ -99,33 +101,33 @@ export default function NodeLibrary({ onDragStart }: NodeLibraryProps) {
 
             <div className="connection-rules">
                 <div className="rules-header">
-                    <span>📋</span>
+                    <FaCopy />
                     <strong>Connection Rules</strong>
                 </div>
                 <div className="rules-list">
                     <div className="rule-item">
-                        <strong>🎬 Trigger</strong>
+                        <strong><FaPlay style={{ marginRight: '6px' }} />Trigger</strong>
                         <span>→ Data, Logic, Chainlink, Blockchain, AI</span>
                         <small>Only 1 trigger per workflow</small>
                     </div>
                     <div className="rule-item">
-                        <strong>📡 Data Source</strong>
+                        <strong><FaDatabase style={{ marginRight: '6px' }} />Data Source</strong>
                         <span>→ Logic, Chainlink, Blockchain, AI</span>
                     </div>
                     <div className="rule-item">
-                        <strong>🔗 Chainlink</strong>
+                        <strong><FaLink style={{ marginRight: '6px' }} />Chainlink</strong>
                         <span>→ Logic, Blockchain, AI</span>
                     </div>
                     <div className="rule-item">
-                        <strong>🧠 Logic</strong>
+                        <strong><FaBrain style={{ marginRight: '6px' }} />Logic</strong>
                         <span>→ Anywhere (most flexible)</span>
                     </div>
                     <div className="rule-item">
-                        <strong>⛓️ Blockchain</strong>
+                        <strong><FaLink style={{ marginRight: '6px' }} />Blockchain</strong>
                         <span>→ Logic, AI</span>
                     </div>
                     <div className="rule-item">
-                        <strong>🤖 AI</strong>
+                        <strong><FaRobot style={{ marginRight: '6px' }} />AI</strong>
                         <span>→ Logic, Blockchain</span>
                     </div>
                 </div>

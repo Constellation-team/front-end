@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { FaFlask, FaCopy, FaCheck, FaSyncAlt } from 'react-icons/fa';
 import './SimulationModal.css';
 
 interface SimulationModalProps {
@@ -76,7 +77,7 @@ export default function SimulationModal({
             <div className="simulation-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="simulation-modal-header">
                     <h2 className="simulation-modal-title">
-                        🧪 Workflow Simulation
+                        <FaFlask style={{ marginRight: '8px' }} /> Workflow Simulation
                         <span className={`simulation-status ${status}`}>
                             <span className="simulation-status-icon"></span>
                             {status === 'running' && 'Running...'}
@@ -102,7 +103,7 @@ export default function SimulationModal({
                         onClick={handleCopy}
                         disabled={!output || output === 'Preparing workflow...\n'}
                     >
-                        {isCopied ? '✓ Copied!' : '📋 Copy Output'}
+                        {isCopied ? <><FaCheck style={{ marginRight: '6px' }} /> Copied!</> : <><FaCopy style={{ marginRight: '6px' }} /> Copy Output</>}
                     </button>
                     <div style={{ flex: 1 }}></div>
                     <button 
@@ -117,7 +118,7 @@ export default function SimulationModal({
                             onClick={onRunAgain}
                             disabled={status === 'running'}
                         >
-                            {status === 'running' ? 'Running...' : '🔄 Run Again'}
+                            {status === 'running' ? 'Running...' : <><FaSyncAlt style={{ marginRight: '6px' }} /> Run Again</>}
                         </button>
                     )}
                 </div>

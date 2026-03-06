@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaBolt, FaPalette, FaLink, FaFlask, FaBox } from 'react-icons/fa';
 import './LandingPage.css';
 
 export default function LandingPage() {
@@ -184,7 +185,7 @@ export default function LandingPage() {
 
                 <div className="hero-content">
                     <div className="hero-badge">
-                        <span className="badge-icon">⚡</span>
+                        <span className="badge-icon"><FaBolt /></span>
                         Powered by Chainlink CRE
                     </div>
 
@@ -239,31 +240,31 @@ export default function LandingPage() {
 
                 <div className="features-grid">
                     <div className="feature-card">
-                        <div className="feature-icon">🎨</div>
+                        <div className="feature-icon"><FaPalette size={40} /></div>
                         <h3>Visual Flow Builder</h3>
                         <p>Drag, drop, and connect nodes to create complex workflows. No coding required.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon">🔗</div>
+                        <div className="feature-icon"><FaLink size={40} /></div>
                         <h3>Chainlink Native</h3>
                         <p>Built on CRE with native support for Oracles, CCIP, Functions, and more.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon">⚡</div>
+                        <div className="feature-icon"><FaBolt size={40} /></div>
                         <h3>Instant Export</h3>
                         <p>Generate production-ready CRE projects with proper structure and configuration.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon">🧪</div>
+                        <div className="feature-icon"><FaFlask size={40} /></div>
                         <h3>Local Simulation</h3>
                         <p>Test your workflows locally before deploying to testnet or mainnet.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon">📦</div>
+                        <div className="feature-icon"><FaBox size={40} /></div>
                         <h3>Template Library</h3>
                         <p>Start from pre-built templates for DeFi, NFTs, and cross-chain apps.</p>
                     </div>

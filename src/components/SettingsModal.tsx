@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '../config';
+import { FaCog, FaSearch, FaTrash, FaSave } from 'react-icons/fa';
+import { MdError } from 'react-icons/md';
 import './SettingsModal.css';
 
 interface SettingsModalProps {
@@ -99,7 +101,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="settings-modal-header">
                     <h2 className="settings-modal-title">
-                        ⚙️ Simulation Settings
+                        <FaCog style={{ marginRight: '8px' }} /> Simulation Settings
                     </h2>
                     <button className="modal-close-btn" onClick={onClose}>
                         ×
@@ -161,7 +163,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                         {errorMessage && (
                             <div className="settings-error">
-                                ❌ {errorMessage}
+                                <MdError style={{ marginRight: '6px', color: '#ef4444' }} /> {errorMessage}
                             </div>
                         )}
 
@@ -173,7 +175,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                         <div className="settings-help">
                             <details>
-                                <summary>🔍 How to export your private key from MetaMask</summary>
+                                <summary><FaSearch style={{ marginRight: '6px' }} /> How to export your private key from MetaMask</summary>
                                 <ol>
                                     <li>Open MetaMask extension</li>
                                     <li>Click the three dots menu</li>
@@ -195,7 +197,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             onClick={handleClear}
                             disabled={isSaving}
                         >
-                            🗑️ Remove Key
+                            <FaTrash style={{ marginRight: '6px' }} /> Remove Key
                         </button>
                     )}
                     <div style={{ flex: 1 }}></div>
@@ -211,7 +213,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         onClick={handleSave}
                         disabled={isSaving}
                     >
-                        {isSaving ? 'Saving...' : '💾 Save Configuration'}
+                        {isSaving ? 'Saving...' : <><FaSave style={{ marginRight: '6px' }} /> Save Configuration</>}
                     </button>
                 </div>
             </div>

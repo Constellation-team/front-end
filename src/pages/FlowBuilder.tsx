@@ -13,6 +13,7 @@ import ReactFlow, {
 import type { Connection, Node } from 'reactflow';
 import 'reactflow/dist/style.css';
 import './FlowBuilder.css';
+import { FaCog, FaTrash, FaSave, FaFlask } from 'react-icons/fa';
 
 import { useFlowStore } from '../store/flowStore';
 import NodeLibrary, { type NodeTemplate } from '../components/NodeLibrary';
@@ -347,7 +348,7 @@ export default function FlowBuilder() {
                 setSimulationOutput(prev => prev + `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
                 setSimulationOutput(prev => prev + `💡 Alternative: Use "Export Flow"\n`);
                 setSimulationOutput(prev => prev + `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`);
-                setSimulationOutput(prev => prev + `The "💾 Export Flow" button generates a complete\n`);
+                setSimulationOutput(prev => prev + `The "Export Flow" button generates a complete\n`);
                 setSimulationOutput(prev => prev + `CRE project ZIP that you can:\n\n`);
                 setSimulationOutput(prev => prev + `1. Download and extract locally\n`);
                 setSimulationOutput(prev => prev + `2. Follow the QUICKSTART.md guide\n`);
@@ -438,16 +439,16 @@ export default function FlowBuilder() {
                         <ConnectButton chainStatus="icon" showBalance={false} />
                     </div>
                     <button className="btn-settings" onClick={() => setIsSettingsOpen(true)}>
-                        ⚙️ Settings
+                        <FaCog style={{ marginRight: '6px' }} /> Settings
                     </button>
                     <button className="btn-clear" onClick={clearCanvas}>
-                        🗑️ Clear
+                        <FaTrash style={{ marginRight: '6px' }} /> Clear
                     </button>
                     <button className="btn-test" onClick={testWorkflow}>
-                        🧪 prove
+                        <FaFlask style={{ marginRight: '6px' }} /> Prove
                     </button>
                     <button className="btn-export" onClick={exportFlow}>
-                        💾 Export Flow
+                        <FaSave style={{ marginRight: '6px' }} /> Export Flow
                     </button>
                 </div>
             </div>

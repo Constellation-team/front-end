@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getEtherscanUrl } from '../lib/blockchain/deploy';
 import type { DeployedContract } from '../lib/blockchain/contractStorage';
+import { FaFileContract, FaCopy, FaExternalLinkAlt, FaRocket, FaMapMarkerAlt, FaFile, FaCog, FaBook, FaChartBar } from 'react-icons/fa';
 import './ContractDetailsModal.css';
 
 interface ContractDetailsModalProps {
@@ -25,10 +26,10 @@ export default function ContractDetailsModal({
       <div className="contract-details-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title">
-            <span className="contract-icon">📋</span>
+            <span className="contract-icon"><FaFileContract /></span>
             <h2>{contract.name}</h2>
           </div>
-          <button className="close-button" onClick={onClose}>✕</button>
+          <button className="close-button" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-tabs">
@@ -36,13 +37,13 @@ export default function ContractDetailsModal({
             className={`tab ${activeTab === 'info' ? 'active' : ''}`}
             onClick={() => setActiveTab('info')}
           >
-            📊 Contract Info
+            <FaChartBar style={{ marginRight: '6px' }} /> Contract Info
           </button>
           <button
             className={`tab ${activeTab === 'abi' ? 'active' : ''}`}
             onClick={() => setActiveTab('abi')}
           >
-            🔧 ABI Preview
+            <FaCog style={{ marginRight: '6px' }} /> ABI Preview
           </button>
         </div>
 
@@ -50,7 +51,7 @@ export default function ContractDetailsModal({
           {activeTab === 'info' ? (
             <div className="info-tab">
               <div className="info-section">
-                <h3>🚀 Deployment Details</h3>
+                <h3><FaRocket style={{ marginRight: '6px' }} /> Deployment Details</h3>
                 <div className="info-grid">
                   <div className="info-item">
                     <label>Contract Type</label>
@@ -68,7 +69,7 @@ export default function ContractDetailsModal({
               </div>
 
               <div className="info-section">
-                <h3>📍 Contract Address</h3>
+                <h3><FaMapMarkerAlt style={{ marginRight: '6px' }} /> Contract Address</h3>
                 <div className="address-box">
                   <code className="address">{contract.address}</code>
                   <button
@@ -78,7 +79,7 @@ export default function ContractDetailsModal({
                       alert('Address copied to clipboard!');
                     }}
                   >
-                    📋 Copy
+                    <FaCopy style={{ marginRight: '6px' }} /> Copy
                   </button>
                 </div>
                 <a
@@ -87,12 +88,12 @@ export default function ContractDetailsModal({
                   rel="noopener noreferrer"
                   className="etherscan-link"
                 >
-                  🔍 View on Etherscan
+                  <FaExternalLinkAlt style={{ marginRight: '6px' }} /> View on Etherscan
                 </a>
               </div>
 
               <div className="info-section">
-                <h3>📝 Transaction Hash</h3>
+                <h3><FaFile style={{ marginRight: '6px' }} /> Transaction Hash</h3>
                 <div className="address-box">
                   <code className="address">{contract.txHash}</code>
                   <button
@@ -102,7 +103,7 @@ export default function ContractDetailsModal({
                       alert('Transaction hash copied to clipboard!');
                     }}
                   >
-                    📋 Copy
+                    <FaCopy style={{ marginRight: '6px' }} /> Copy
                   </button>
                 </div>
                 <a
@@ -111,12 +112,12 @@ export default function ContractDetailsModal({
                   rel="noopener noreferrer"
                   className="etherscan-link"
                 >
-                  🔍 View Transaction on Etherscan
+                  <FaExternalLinkAlt style={{ marginRight: '6px' }} /> View Transaction on Etherscan
                 </a>
               </div>
 
               <div className="info-section">
-                <h3>📄 Source Code</h3>
+                <h3><FaFileContract style={{ marginRight: '6px' }} /> Source Code</h3>
                 <div className="source-preview">
                   <pre>{contract.sourceCode}</pre>
                 </div>
@@ -126,7 +127,7 @@ export default function ContractDetailsModal({
             <div className="abi-tab">
               <div className="abi-section">
                 <div className="abi-header">
-                  <h3>🔧 Contract ABI</h3>
+                  <h3><FaCog style={{ marginRight: '6px' }} /> Contract ABI</h3>
                   <button
                     className="copy-button"
                     onClick={() => {
@@ -134,7 +135,7 @@ export default function ContractDetailsModal({
                       alert('ABI copied to clipboard!');
                     }}
                   >
-                    📋 Copy ABI
+                    <FaCopy style={{ marginRight: '6px' }} /> Copy ABI
                   </button>
                 </div>
                 <div className="abi-preview">
@@ -143,7 +144,7 @@ export default function ContractDetailsModal({
               </div>
 
               <div className="abi-functions">
-                <h4>📚 Functions & Events</h4>
+                <h4><FaBook style={{ marginRight: '6px' }} /> Functions & Events</h4>
                 <div className="functions-list">
                   {(contract.abi as Array<{ type: string; name?: string; inputs?: unknown[] }>)
                     .filter(item => item.type === 'function' || item.type === 'event')
