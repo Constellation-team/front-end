@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 import type { Node, Edge } from 'reactflow';
 import { generateCRECode } from './codeGenerator';
+import type { DeployedContract } from '../lib/blockchain/contractStorage';
 
 interface ProjectMetadata {
     projectName: string;
@@ -15,7 +16,8 @@ interface ProjectMetadata {
 export async function generateProjectZip(
     nodes: Node[],
     edges: Edge[],
-    metadata: ProjectMetadata
+    metadata: ProjectMetadata,
+    deployedContracts: DeployedContract[] = []
 ): Promise<Blob> {
     const zip = new JSZip();
 
@@ -78,6 +80,45 @@ export async function generateProjectZip(
     
     contracts.file('.gitkeep', '# Add your smart contracts here\n');
     contracts.file('README.md', generateContractsREADME());
+
+    // =========================================================================
+    // DEPLOYED CONTRACTS FOLDER
+    // =========================================================================
+
+    if (deployedContracts.length > 0) {
+        const deployedFolder = zip.folder('deployed-contracts');
+        if (!deployedFolder) throw new Error('Failed to create deployed-contracts folder');
+        
+        // Create a summary file
+        deployedFolder.file('DEPLOYED_CONTRACTS.md', generateDeployedContractsSummary(deployedContracts));
+        
+        // Create individual contract files
+        deployedContracts.forEach(contract => {
+            const contractFolder = deployedFolder.folder(contract.name.toLowerCase().replace(/\s+/g, '-'));
+            if (!contractFolder) return;
+            
+            // Contract info
+            contractFolder.file('contract-info.json', JSON.stringify({
+                name: contract.name,
+                type: contract.type,
+                address: contract.address,
+                network: contract.network,
+                txHash: contract.txHash,
+                deployedAt: new Date(contract.deployedAt).toISOString(),
+                etherscanUrl: `https://sepolia.etherscan.io/address/${contract.address}`,
+                txUrl: `https://sepolia.etherscan.io/tx/${contract.txHash}`
+            }, null, 2));
+            
+            // ABI
+            contractFolder.file('abi.json', JSON.stringify(contract.abi, null, 2));
+            
+            // Source code
+            contractFolder.file('contract.sol', contract.sourceCode);
+            
+            // Interaction example
+            contractFolder.file('interact.ts', generateContractInteractionExample(contract));
+        });
+    }
 
     // Generate ZIP blob
     return await zip.generateAsync({ type: 'blob' });
@@ -781,4 +822,233 @@ npx hardhat verify --network sepolia YOUR_CONTRACT_ADDRESS
 - [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts/)
 - [Etherscan Sepolia](https://sepolia.etherscan.io/)
 `;
+}
+
+function generateDeployedContractsSummary(contracts: DeployedContract[]): string {
+    const contractsList = contracts.map((c, i) => {
+        const deployedDate = new Date(c.deployedAt).toLocaleString();
+        return `## ${i + 1}. ${c.name}
+
+**Type:** ${c.type}  
+**Network:** ${c.network} (Sepolia Testnet)  
+**Address:** \`${c.address}\`  
+**Deployed:** ${deployedDate}  
+**Transaction:** \`${c.txHash}\`
+
+**View on Etherscan:**
+- [Contract](https://sepolia.etherscan.io/address/${c.address})
+- [Transaction](https://sepolia.etherscan.io/tx/${c.txHash})
+
+**Files:**
+- \`${c.name.toLowerCase().replace(/\s+/g, '-')}/contract-info.json\` - Deployment details
+- \`${c.name.toLowerCase().replace(/\s+/g, '-')}/abi.json\` - Contract ABI
+- \`${c.name.toLowerCase().replace(/\s+/g, '-')}/contract.sol\` - Source code
+- \`${c.name.toLowerCase().replace(/\s+/g, '-')}/interact.ts\` - Interaction example
+
+---
+`;
+    }).join('\n');
+
+    return `# Deployed Contracts
+
+This folder contains information about smart contracts that were deployed using the CREator visual builder.
+
+**Total Deployed Contracts:** ${contracts.length}
+
+---
+
+${contractsList}
+
+## Using These Contracts in Your Workflow
+
+All deployed contracts are already referenced in the generated workflow code (\`workflows/main.ts\`). The contract addresses and ABIs are included as comments.
+
+### Quick Integration
+
+1. Each contract folder contains an \`interact.ts\` file with example code
+2. The ABIs are in \`abi.json\` for easy import
+3. Contract addresses are in \`contract-info.json\`
+
+### Example: Importing a Contract
+
+\`\`\`typescript
+import { ethers } from 'ethers';
+import contractInfo from './deployed-contracts/my-contract/contract-info.json';
+import abi from './deployed-contracts/my-contract/abi.json';
+
+const contract = new ethers.Contract(
+    contractInfo.address,
+    abi,
+    signer
+);
+
+// Interact with your contract
+const result = await contract.someMethod();
+\`\`\`
+
+## Security Note
+
+🔒 **Important:** These contracts are deployed on Sepolia testnet. Do not send real ETH or interact with mainnet using these addresses.
+
+For mainnet deployment:
+1. Thoroughly test on testnet
+2. Get security audit
+3. Deploy to mainnet using proper tooling
+4. Verify contracts on Etherscan
+
+## Need Help?
+
+- [CREator Documentation](https://github.com/yourusername/creator)
+- [Ethers.js Documentation](https://docs.ethers.org/)
+- [Chainlink Documentation](https://docs.chain.link/)
+`;
+}
+
+function generateContractInteractionExample(contract: DeployedContract): string {
+    return `import { ethers } from 'ethers';
+
+/**
+ * Example interaction with ${contract.name}
+ * 
+ * Contract Address: ${contract.address}
+ * Network: ${contract.network} (Sepolia Testnet)
+ * Deployed: ${new Date(contract.deployedAt).toLocaleString()}
+ * 
+ * View on Etherscan: https://sepolia.etherscan.io/address/${contract.address}
+ */
+
+// Contract ABI (imported from abi.json or defined inline)
+const ABI = ${JSON.stringify(contract.abi, null, 2)};
+
+// Contract address
+const CONTRACT_ADDRESS = '${contract.address}';
+
+async function interact() {
+    // Setup provider and signer
+    // For production, use environment variables for private keys
+    const provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/YOUR_INFURA_KEY');
+    const signer = new ethers.Wallet('YOUR_PRIVATE_KEY', provider);
+    
+    // Create contract instance
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+    
+    try {
+        // Example interactions (uncomment and modify as needed)
+        
+        ${generateContractSpecificExamples(contract.type)}
+        
+    } catch (error) {
+        console.error('Error interacting with contract:', error);
+    }
+}
+
+// Run the interaction
+// interact().then(() => console.log('Done')).catch(console.error);
+
+export { ABI, CONTRACT_ADDRESS };
+`;
+}
+
+function generateContractSpecificExamples(contractType: string): string {
+    switch (contractType) {
+        case 'simple-storage':
+            return `        // Set a value
+        // const tx = await contract.set(42);
+        // await tx.wait();
+        // console.log('Value set to 42');
+        
+        // Get the value
+        // const value = await contract.get();
+        // console.log('Current value:', value.toString());`;
+        
+        case 'erc20-token':
+            return `        // Get token info
+        // const name = await contract.name();
+        // const symbol = await contract.symbol();
+        // console.log(\`Token: \${name} (\${symbol})\`);
+        
+        // Check balance
+        // const balance = await contract.balanceOf(signer.address);
+        // console.log('Your balance:', ethers.formatEther(balance));
+        
+        // Transfer tokens
+        // const recipientAddress = '0x...';
+        // const amount = ethers.parseEther('10');
+        // const tx = await contract.transfer(recipientAddress, amount);
+        // await tx.wait();
+        // console.log('Tokens transferred');`;
+        
+        case 'erc721-nft':
+            return `        // Mint an NFT
+        // const tx = await contract.mint(signer.address);
+        // const receipt = await tx.wait();
+        // console.log('NFT minted');
+        
+        // Check balance
+        // const balance = await contract.balanceOf(signer.address);
+        // console.log('Your NFTs:', balance.toString());
+        
+        // Transfer NFT
+        // const tokenId = 1;
+        // const recipientAddress = '0x...';
+        // const tx2 = await contract.transferFrom(signer.address, recipientAddress, tokenId);
+        // await tx2.wait();
+        // console.log('NFT transferred');`;
+        
+        case 'crowdfunding':
+            return `        // Contribute to campaign
+        // const tx = await contract.contribute({ value: ethers.parseEther('0.1') });
+        // await tx.wait();
+        // console.log('Contribution sent');
+        
+        // Check campaign status
+        // const totalContributed = await contract.totalContributed();
+        // const goal = await contract.goal();
+        // console.log(\`Progress: \${ethers.formatEther(totalContributed)} / \${ethers.formatEther(goal)} ETH\`);
+        
+        // Claim funds (owner only, after deadline and goal reached)
+        // const tx2 = await contract.claimFunds();
+        // await tx2.wait();
+        // console.log('Funds claimed');`;
+        
+        case 'voting':
+            return `        // Add a proposal (chairperson only)
+        // const tx = await contract.addProposal('Proposal: Increase budget by 10%');
+        // await tx.wait();
+        // console.log('Proposal added');
+        
+        // Vote on a proposal
+        // const proposalIndex = 0;
+        // const tx2 = await contract.vote(proposalIndex);
+        // await tx2.wait();
+        // console.log('Vote cast');
+        
+        // Get winner
+        // const [winnerDesc, winnerVotes] = await contract.getWinner();
+        // console.log(\`Winner: \${winnerDesc} with \${winnerVotes} votes\`);`;
+        
+        case 'multisig-wallet':
+            return `        // Submit a transaction
+        // const recipientAddress = '0x...';
+        // const amount = ethers.parseEther('1.0');
+        // const tx = await contract.submit(recipientAddress, amount);
+        // await tx.wait();
+        // console.log('Transaction submitted');
+        
+        // Confirm a transaction
+        // const txId = 0;
+        // const tx2 = await contract.confirm(txId);
+        // await tx2.wait();
+        // console.log('Transaction confirmed');
+        
+        // Execute a transaction (after enough confirmations)
+        // const tx3 = await contract.execute(txId);
+        // await tx3.wait();
+        // console.log('Transaction executed');`;
+        
+        default:
+            return `        // Add your contract interaction code here
+        // const result = await contract.someMethod();
+        // console.log('Result:', result);`;
+    }
 }

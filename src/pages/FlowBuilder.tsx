@@ -23,7 +23,7 @@ import ChatBot from '../components/ChatBot';
 import { generateCRECode } from '../utils/codeGenerator';
 import { isValidConnection, canAddNode, validateWorkflow } from '../utils/flowValidation';
 import { generateProjectZip, downloadZip } from '../utils/projectTemplateGenerator';
-import { saveDeployedContract, getContractByNodeId } from '../lib/blockchain/contractStorage';
+import { saveDeployedContract, getContractByNodeId, getDeployedContracts } from '../lib/blockchain/contractStorage';
 import type { DeployedContract } from '../lib/blockchain/contractStorage';
 import { connectWallet, ensureSepoliaNetwork } from '../lib/blockchain/deploy';
 import { API_URL } from '../config';
@@ -254,6 +254,11 @@ export default function FlowBuilder() {
         }
 
         try {
+            // Get deployed contracts for nodes in this workflow
+            const allDeployedContracts = getDeployedContracts();
+            const workflowNodeIds = nodes.map(n => n.id);
+            const workflowContracts = allDeployedContracts.filter(c => workflowNodeIds.includes(c.nodeId));
+            
             // Generate the complete project ZIP
             const zipBlob = await generateProjectZip(
                 nodes,
@@ -262,14 +267,20 @@ export default function FlowBuilder() {
                     projectName,
                     description: projectDescription || 'A Chainlink CRE workflow',
                     author: undefined,
-                }
+                },
+                workflowContracts
             );
 
             // Download the ZIP file
             const filename = `${projectName.toLowerCase().replace(/\s+/g, '-')}.zip`;
             downloadZip(zipBlob, filename);
 
-            alert(`✅ Success!\n\nYour project "${projectName}" has been exported.\n\nThe ZIP contains:\n• Workflow files (main.ts, configs)\n• Project configuration\n• Documentation (README, QUICKSTART)\n• Setup files (.env.example, .gitignore)\n\nExtract the ZIP and follow the QUICKSTART.md to get started!`);
+            // Success message with contract info
+            const contractInfo = workflowContracts.length > 0
+                ? `\n\n📜 Deployed Contracts Included: ${workflowContracts.length}\n${workflowContracts.map(c => `  • ${c.name} (${c.address.slice(0, 10)}...)`).join('\n')}`
+                : '';
+
+            alert(`✅ Success!\n\nYour project "${projectName}" has been exported.\n\nThe ZIP contains:\n• Workflow files (main.ts, configs)\n• Project configuration\n• Documentation (README, QUICKSTART)\n• Setup files (.env.example, .gitignore)${contractInfo}\n\nExtract the ZIP and follow the QUICKSTART.md to get started!`);
         } catch (error) {
             console.error('Export error:', error);
             alert('❌ Failed to export project. Check console for details.');
