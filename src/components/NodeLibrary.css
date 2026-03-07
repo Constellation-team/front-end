@@ -94,54 +94,42 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    padding: 12px;
+    background: #1e2028;
+    border: 1px solid #363945;
+    border-radius: 8px;
     cursor: grab;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.node-template::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .node-template:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(102, 126, 234, 0.4);
-    transform: translateX(5px) translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(102, 126, 234, 0.15);
-}
-
-.node-template:hover::before {
-    opacity: 1;
+    background: #252830;
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .node-template:active {
     cursor: grabbing;
-    transform: translateX(2px) scale(0.98);
+    transform: translateY(0);
 }
 
 .template-icon {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     flex-shrink: 0;
-    transition: transform 0.3s ease, filter 0.3s ease;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    transition: transform 0.2s ease;
 }
 
 .node-template:hover .template-icon {
-    transform: scale(1.1) rotate(5deg);
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+    transform: scale(1.05);
 }
 
 .template-info {
