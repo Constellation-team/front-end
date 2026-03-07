@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBolt, FaPalette, FaLink, FaFlask, FaBox } from 'react-icons/fa';
+import { FaBolt, FaPalette, FaLink, FaFlask, FaBox, FaCubes, FaNetworkWired, FaCodeBranch, FaShieldAlt, FaPlay, FaChevronRight } from 'react-icons/fa';
 import './LandingPage.css';
 
 export default function LandingPage() {
@@ -8,7 +8,7 @@ export default function LandingPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Floating particles animation (Antigravity-inspired)
+        // Node connection animation (n8n/Node-RED inspired)
         const canvas = canvasRef.current;
         if (!canvas) return;
 
@@ -18,121 +18,258 @@ export default function LandingPage() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
+        const colors = ['#6366f1', '#ec4899', '#8b5cf6', '#3b82f6', '#10b981'];
+
         // Mouse position tracking
         const mouse = {
             x: 0,
             y: 0,
-            radius: 150, // Attraction radius
+            radius: 120, // Interaction radius
+            isActive: false
         };
 
-        // Color palette for particles
-        const colors = [
-            'rgba(102, 126, 234, ', // Purple
-            'rgba(118, 75, 162, ',  // Deep Purple
-            'rgba(240, 147, 251, ', // Pink
-            'rgba(79, 172, 254, ',  // Blue
-            'rgba(0, 242, 254, ',   // Cyan
-        ];
-
-        const particles: Array<{
+        // Define nodes for background
+        const nodes: Array<{
             x: number;
             y: number;
-            baseX: number;
-            baseY: number;
-            size: number;
-            speedX: number;
-            speedY: number;
-            opacity: number;
+            vx: number;
+            vy: number;
+            width: number;
+            height: number;
+            baseColor: string;
+            activeColor: string;
             color: string;
+            targetScale: number;
+            currentScale: number;
+            connections: number[];
+            id: number;
         }> = [];
 
-        // Create particles (increased from 50 to 100)
-        for (let i = 0; i < 100; i++) {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height;
-            const colorBase = colors[Math.floor(Math.random() * colors.length)];
-            particles.push({
-                x,
-                y,
-                baseX: x,
-                baseY: y,
-                size: Math.random() * 3 + 1,
-                speedX: (Math.random() - 0.5) * 0.5,
-                speedY: (Math.random() - 0.5) * 0.5,
-                opacity: Math.random() * 0.5 + 0.3,
-                color: colorBase,
+        // Reduce node count for larger blocks
+        const numNodes = Math.floor(window.innerWidth / 200);
+
+        for (let i = 0; i < numNodes; i++) {
+            const baseC = colors[Math.floor(Math.random() * colors.length)];
+            nodes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                width: 40 + Math.random() * 20,
+                height: 25 + Math.random() * 15,
+                baseColor: '#1e2028',
+                activeColor: baseC,
+                color: '#1e2028',
+                targetScale: 1,
+                currentScale: 1,
+                connections: [],
+                id: i,
             });
         }
 
-        // Mouse move handler
+        // Establish static connections
+        nodes.forEach((node, i) => {
+            const numConnections = Math.floor(Math.random() * 2) + 1;
+            for (let c = 0; c < numConnections; c++) {
+                // Connect to nearest neighbors conceptually
+                const targetId = Math.floor(Math.random() * numNodes);
+                if (targetId !== i && !node.connections.includes(targetId)) {
+                    node.connections.push(targetId);
+                }
+            }
+        });
+
+        // Data packets flowing between nodes
+        const packets: Array<{
+            sourceId: number;
+            targetId: number;
+            progress: number;
+            speed: number;
+            color: string;
+        }> = [];
+
         const handleMouseMove = (e: MouseEvent) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
+            mouse.isActive = true;
+        };
+
+        const handleMouseLeave = () => {
+            mouse.isActive = false;
         };
 
         window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseleave', handleMouseLeave);
 
         function animate() {
             if (!ctx || !canvas) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            particles.forEach((particle) => {
-                // Calculate distance from mouse
-                const dx = mouse.x - particle.x;
-                const dy = mouse.y - particle.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+            // Update node positions and interactions
+            nodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
 
-                // Attraction effect when mouse is near
-                if (distance < mouse.radius) {
-                    const force = (mouse.radius - distance) / mouse.radius;
-                    const angle = Math.atan2(dy, dx);
-                    particle.x += Math.cos(angle) * force * 3;
-                    particle.y += Math.sin(angle) * force * 3;
-                } else {
-                    // Return to base position slowly
-                    particle.x += (particle.baseX - particle.x) * 0.05;
-                    particle.y += (particle.baseY - particle.y) * 0.05;
-                }
+                if (node.x <= 0 || node.x >= canvas.width) node.vx *= -1;
+                if (node.y <= 0 || node.y >= canvas.height) node.vy *= -1;
 
-                // Normal movement
-                particle.baseX += particle.speedX;
-                particle.baseY += particle.speedY;
-
-                // Wrap around edges for base position
-                if (particle.baseX < 0) particle.baseX = canvas.width;
-                if (particle.baseX > canvas.width) particle.baseX = 0;
-                if (particle.baseY < 0) particle.baseY = canvas.height;
-                if (particle.baseY > canvas.height) particle.baseY = 0;
-
-                // Draw particle
-                ctx.beginPath();
-                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                ctx.fillStyle = `${particle.color}${particle.opacity})`;
-                ctx.fill();
-
-                // Add glow effect
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = `${particle.color}0.5)`;
-                ctx.fill();
-                ctx.shadowBlur = 0;
-
-                // Draw connections
-                particles.forEach((otherParticle) => {
-                    const dx = particle.x - otherParticle.x;
-                    const dy = particle.y - otherParticle.y;
+                // Mouse Interaction Logic
+                let isHovered = false;
+                if (mouse.isActive) {
+                    const dx = mouse.x - node.x;
+                    const dy = mouse.y - node.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
-                    if (distance < 150) {
-                        ctx.beginPath();
-                        ctx.moveTo(particle.x, particle.y);
-                        ctx.lineTo(otherParticle.x, otherParticle.y);
-                        // Mix colors for connections
-                        const opacity = 0.2 * (1 - distance / 150);
-                        ctx.strokeStyle = `${particle.color}${opacity})`;
-                        ctx.lineWidth = 0.8;
-                        ctx.stroke();
+                    if (distance < mouse.radius) {
+                        isHovered = true;
+                        // Push slightly away from cursor slowly
+                        const force = (mouse.radius - distance) / mouse.radius;
+                        node.x -= (dx / distance) * force * 1.5;
+                        node.y -= (dy / distance) * force * 1.5;
                     }
+                }
+
+                if (isHovered) {
+                    node.targetScale = 1.3;
+                    node.color = node.activeColor;
+                } else {
+                    node.targetScale = 1;
+                    node.color = node.baseColor;
+                }
+
+                // Smooth scale transition
+                node.currentScale += (node.targetScale - node.currentScale) * 0.1;
+            });
+
+            // Randomly create new data packets
+            if (Math.random() < 0.05 && packets.length < 15) {
+                const source = nodes[Math.floor(Math.random() * nodes.length)];
+                if (source.connections.length > 0) {
+                    const targetId = source.connections[Math.floor(Math.random() * source.connections.length)];
+                    packets.push({
+                        sourceId: source.id,
+                        targetId: targetId,
+                        progress: 0,
+                        speed: 0.005 + Math.random() * 0.01,
+                        color: source.activeColor
+                    });
+                }
+            }
+
+            // Draw connections (edges)
+            ctx.lineWidth = 1.5;
+            nodes.forEach(node => {
+                node.connections.forEach(targetId => {
+                    const target = nodes[targetId];
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y);
+
+                    // Stepped path for "circuit" look instead of pure bezier
+                    const midX = (node.x + target.x) / 2;
+                    ctx.lineTo(midX, node.y);
+                    ctx.lineTo(midX, target.y);
+                    ctx.lineTo(target.x, target.y);
+
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+
+                    // Highlight connection if either node is active
+                    if (node.currentScale > 1.1 || target.currentScale > 1.1) {
+                        ctx.strokeStyle = node.activeColor + '40'; // Add transparency
+                        ctx.lineWidth = 2;
+                        ctx.shadowBlur = 5;
+                        ctx.shadowColor = node.activeColor;
+                    } else {
+                        ctx.lineWidth = 1;
+                        ctx.shadowBlur = 0;
+                    }
+
+                    ctx.stroke();
+                    ctx.shadowBlur = 0; // reset
                 });
+            });
+
+            // Draw data packets
+            for (let i = packets.length - 1; i >= 0; i--) {
+                const packet = packets[i];
+                packet.progress += packet.speed;
+
+                if (packet.progress >= 1) {
+                    packets.splice(i, 1);
+                    continue;
+                }
+
+                const source = nodes[packet.sourceId];
+                const target = nodes[packet.targetId];
+
+                // Calculate position along stepped path
+                const t = packet.progress;
+                let x, y;
+                const midX = (source.x + target.x) / 2;
+
+                if (t < 0.33) {
+                    // Segment 1: source to midX
+                    const segT = t / 0.33;
+                    x = source.x + (midX - source.x) * segT;
+                    y = source.y;
+                } else if (t < 0.66) {
+                    // Segment 2: midX, source.y to midX, target.y
+                    const segT = (t - 0.33) / 0.33;
+                    x = midX;
+                    y = source.y + (target.y - source.y) * segT;
+                } else {
+                    // Segment 3: midX to target
+                    const segT = (t - 0.66) / 0.34;
+                    x = midX + (target.x - midX) * segT;
+                    y = target.y;
+                }
+
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = packet.color;
+                ctx.fill();
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = packet.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            // Draw nodes (blocks)
+            nodes.forEach(node => {
+                const w = node.width * node.currentScale;
+                const h = node.height * node.currentScale;
+                const rx = node.x - w / 2;
+                const ry = node.y - h / 2;
+
+                // Draw Block Body
+                ctx.beginPath();
+                ctx.roundRect(rx, ry, w, h, 6);
+                ctx.fillStyle = node.color;
+
+                if (node.currentScale > 1.05) {
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = node.activeColor;
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+
+                ctx.fill();
+
+                // Draw Block Border
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = node.currentScale > 1.05 ? '#ffffff' : '#363945';
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // Draw input/output handles (little dots on sides)
+                ctx.beginPath();
+                ctx.arc(rx, node.y, 3 * node.currentScale, 0, Math.PI * 2); // Left Handle
+                ctx.fillStyle = '#363945';
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(rx + w, node.y, 3 * node.currentScale, 0, Math.PI * 2); // Right Handle
+                ctx.fillStyle = node.activeColor;
+                ctx.fill();
             });
 
             requestAnimationFrame(animate);
@@ -150,18 +287,20 @@ export default function LandingPage() {
         return () => {
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseleave', handleMouseLeave);
         };
     }, []);
 
     return (
         <div className="landing-page">
-            {/* Floating Particles Canvas */}
+            {/* Background Canvas */}
             <canvas ref={canvasRef} className="particles-canvas"></canvas>
 
             {/* Navigation */}
             <nav className="navbar">
                 <div className="nav-container">
                     <div className="logo">
+                        <FaNetworkWired className="logo-icon" />
                         <span className="logo-text">CRE</span>
                         <span className="logo-accent">ator</span>
                     </div>
@@ -169,45 +308,40 @@ export default function LandingPage() {
                         <a href="#features">Features</a>
                         <a href="#how-it-works">How It Works</a>
                         <a href="#docs">Docs</a>
-                        <button className="btn-primary" onClick={() => navigate('/builder')}>Launch App</button>
+                        <button className="btn-primary" onClick={() => navigate('/builder')}>Launch Builder</button>
                     </div>
                 </div>
             </nav>
 
             {/* Hero Section */}
             <section className="hero">
-                <div className="hero-background">
-                    <div className="gradient-orb orb-1"></div>
-                    <div className="gradient-orb orb-2"></div>
-                    <div className="gradient-orb orb-3"></div>
-                    <div className="grid-overlay"></div>
-                </div>
+                <div className="grid-overlay"></div>
 
                 <div className="hero-content">
                     <div className="hero-badge">
-                        <span className="badge-icon"><FaBolt /></span>
+                        <FaBolt className="badge-icon" />
                         Powered by Chainlink CRE
                     </div>
 
                     <h1 className="hero-title">
-                        Build Smart Contracts
+                        Workflow Automation
                         <br />
-                        <span className="gradient-text">Visually</span>
+                        <span className="gradient-text">for Web3</span>
                     </h1>
 
                     <p className="hero-subtitle">
-                        Create, orchestrate, and deploy Chainlink Runtime Environment workflows
+                        Create, orchestrate, and deploy Chainlink Runtime Environment workflows visually.
                         <br />
-                        without writing a single line of code. Like Node-RED, but for Web3.
+                        Professional node-based architecture, zero code required.
                     </p>
 
                     <div className="hero-cta">
                         <button className="btn-hero" onClick={() => navigate('/builder')}>
-                            Start Building
-                            <span className="btn-arrow">→</span>
+                            Open FlowBuilder
+                            <FaChevronRight className="btn-arrow" />
                         </button>
                         <button className="btn-secondary">
-                            <span className="play-icon">▶</span>
+                            <FaPlay className="play-icon" />
                             Watch Demo
                         </button>
                     </div>
@@ -215,15 +349,15 @@ export default function LandingPage() {
                     <div className="hero-stats">
                         <div className="stat">
                             <div className="stat-number">100%</div>
-                            <div className="stat-label">No-Code</div>
+                            <div className="stat-label">Visual Logic</div>
                         </div>
                         <div className="stat">
-                            <div className="stat-number">10+</div>
+                            <div className="stat-number">15+</div>
                             <div className="stat-label">Node Types</div>
                         </div>
                         <div className="stat">
-                            <div className="stat-number">∞</div>
-                            <div className="stat-label">Possibilities</div>
+                            <div className="stat-number">1-Click</div>
+                            <div className="stat-label">Deployments</div>
                         </div>
                     </div>
                 </div>
@@ -232,47 +366,47 @@ export default function LandingPage() {
             {/* Features Section */}
             <section id="features" className="features">
                 <div className="section-header">
-                    <h2 className="section-title">Why CREator?</h2>
+                    <h2 className="section-title">Enterprise-Grade Automation</h2>
                     <p className="section-subtitle">
-                        The fastest way to prototype and deploy Chainlink workflows
+                        A familiar IDE-like environment for Chainlink developers
                     </p>
                 </div>
 
                 <div className="features-grid">
                     <div className="feature-card">
-                        <div className="feature-icon"><FaPalette size={40} /></div>
+                        <div className="feature-icon" style={{ color: '#6366f1' }}><FaNetworkWired size={36} /></div>
                         <h3>Visual Flow Builder</h3>
-                        <p>Drag, drop, and connect nodes to create complex workflows. No coding required.</p>
+                        <p>Intuitive canvas with structured nodes, typed connections, and real-time validation.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon"><FaLink size={40} /></div>
+                        <div className="feature-icon" style={{ color: '#3b82f6' }}><FaLink size={36} /></div>
                         <h3>Chainlink Native</h3>
-                        <p>Built on CRE with native support for Oracles, CCIP, Functions, and more.</p>
+                        <p>First-class support for Data Streams, Functions, CCIP, and Oracles embedded as nodes.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon"><FaBolt size={40} /></div>
+                        <div className="feature-icon" style={{ color: '#10b981' }}><FaCubes size={36} /></div>
                         <h3>Instant Export</h3>
-                        <p>Generate production-ready CRE projects with proper structure and configuration.</p>
+                        <p>Generate production-ready Solidity contracts and Hardhat projects from your visual graph.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon"><FaFlask size={40} /></div>
+                        <div className="feature-icon" style={{ color: '#f59e0b' }}><FaFlask size={36} /></div>
                         <h3>Local Simulation</h3>
-                        <p>Test your workflows locally before deploying to testnet or mainnet.</p>
+                        <p>Test triggers and monitor data flow across nodes locally before touching a testnet.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon"><FaBox size={40} /></div>
+                        <div className="feature-icon" style={{ color: '#ec4899' }}><FaBox size={36} /></div>
                         <h3>Template Library</h3>
-                        <p>Start from pre-built templates for DeFi, NFTs, and cross-chain apps.</p>
+                        <p>Start fast with pre-built boilerplate workflows for DeFi, Gaming, and Cross-chain apps.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon">🔐</div>
+                        <div className="feature-icon" style={{ color: '#8b5cf6' }}><FaShieldAlt size={36} /></div>
                         <h3>Secure by Default</h3>
-                        <p>Best practices built-in. Secrets management and validation included.</p>
+                        <p>Built-in static analysis prevents insecure node connections and warns of vulnerabilities.</p>
                     </div>
                 </div>
             </section>
@@ -280,31 +414,44 @@ export default function LandingPage() {
             {/* How It Works */}
             <section id="how-it-works" className="how-it-works">
                 <div className="section-header">
-                    <h2 className="section-title">How It Works</h2>
+                    <h2 className="section-title">Workflow Execution</h2>
                 </div>
 
-                <div className="steps">
-                    <div className="step">
-                        <div className="step-number">01</div>
+                <div className="steps-container">
+                    <div className="technical-step">
+                        <div className="step-node">
+                            <div className="step-icon"><FaCodeBranch size={24} /></div>
+                            <div className="step-number">01</div>
+                        </div>
                         <div className="step-content">
-                            <h3>Design Your Flow</h3>
-                            <p>Use the visual canvas to connect triggers, oracles, and smart contracts.</p>
+                            <h3>Connect Nodes</h3>
+                            <p>Map triggers (time/webhook) to logic and Chainlink services using standard bezier handles.</p>
                         </div>
                     </div>
 
-                    <div className="step">
-                        <div className="step-number">02</div>
+                    <div className="step-connector"></div>
+
+                    <div className="technical-step">
+                        <div className="step-node">
+                            <div className="step-icon"><FaPalette size={24} /></div>
+                            <div className="step-number">02</div>
+                        </div>
                         <div className="step-content">
-                            <h3>Configure Nodes</h3>
-                            <p>Set parameters, API endpoints, and contract addresses through intuitive forms.</p>
+                            <h3>Configure Params</h3>
+                            <p>Inject specific ABIs, endpoint URLs, and contract addresses into the node property panels.</p>
                         </div>
                     </div>
 
-                    <div className="step">
-                        <div className="step-number">03</div>
+                    <div className="step-connector"></div>
+
+                    <div className="technical-step">
+                        <div className="step-node">
+                            <div className="step-icon"><FaBolt size={24} /></div>
+                            <div className="step-number">03</div>
+                        </div>
                         <div className="step-content">
-                            <h3>Test & Export</h3>
-                            <p>Simulate locally, then export a complete CRE project ready to deploy.</p>
+                            <h3>Compile & Deploy</h3>
+                            <p>Export the interconnected graph into executable web3 infrastructure instantly.</p>
                         </div>
                     </div>
                 </div>
@@ -313,13 +460,13 @@ export default function LandingPage() {
             {/* CTA Section */}
             <section className="cta-section">
                 <div className="cta-content">
-                    <h2 className="cta-title">Ready to Create?</h2>
+                    <h2 className="cta-title">Start Automating</h2>
                     <p className="cta-subtitle">
-                        Join the future of smart contract development
+                        Build your first Chainlink workflow in minutes
                     </p>
                     <button className="btn-hero" onClick={() => navigate('/builder')}>
-                        Launch CREator
-                        <span className="btn-arrow">→</span>
+                        Lanch FlowBuilder
+                        <FaChevronRight className="btn-arrow" />
                     </button>
                 </div>
             </section>
@@ -329,6 +476,7 @@ export default function LandingPage() {
                 <div className="footer-content">
                     <div className="footer-left">
                         <div className="logo">
+                            <FaNetworkWired className="logo-icon" size={16} />
                             <span className="logo-text">CRE</span>
                             <span className="logo-accent">ator</span>
                         </div>
