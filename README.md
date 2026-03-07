@@ -1,6 +1,6 @@
 ﻿# CREator - Visual Workflow Builder for Chainlink CRE
 
-> **Hackathon judges:** See [JUDGES.md](../JUDGES.md) for a step-by-step evaluation guide covering live deployment links, local setup, and a walkthrough of every feature.
+> **Hackathon judges:** See [JUDGES.md](documentation/JUDGES.md) for a step-by-step evaluation guide covering live deployment links, local setup, and a walkthrough of every feature.
 
 A browser-based visual editor for Chainlink Runtime Environment (CRE) workflows. Design, validate, simulate, and export CRE workflows without writing code. Inspired by Node-RED and n8n.
 
@@ -41,8 +41,7 @@ A browser-based visual editor for Chainlink Runtime Environment (CRE) workflows.
 
 ### Workflow Simulation
 
-- Runs a custom simulation engine on the backend that reads main.ts and parses 
-untime.log() calls
+- Runs a custom simulation engine on the backend that reads main.ts and parses runtime.log() calls
 - Returns output formatted identically to the real CRE CLI ([SIMULATION] and [USER LOG] markers)
 - Works in production on Render without the CRE CLI installed and without authentication
 
@@ -201,7 +200,7 @@ front-end/
 
 ### Frontend (Vercel)
 
-1. Connect the ront-end directory to Vercel.
+1. Connect the front-end directory to Vercel.
 2. Framework preset: **Vite**.
 3. Set environment variables:
    - VITE_WALLET_CONNECT_PROJECT_ID - your WalletConnect project ID
@@ -210,12 +209,12 @@ front-end/
 
 ### Backend (Render)
 
-See ack-end/DEPLOYMENT.md for the full guide.
+See back-end/DEPLOYMENT.md for the full guide.
 
 ## Known Limitations
 
 - HttpCapability is not available in @chainlink/cre-sdk 1.0.9; generated workflows use simulated HTTP data.
-- etch() is not available in the CRE/QuickJS runtime; use Chainlink Functions for real HTTP requests.
+- fetch() is not available in the CRE/QuickJS runtime; use Chainlink Functions for real HTTP requests.
 - Node parameters (schedule, URL, etc.) cannot be edited in the UI; edit the generated main.ts after export.
 - Simulation runs against the last-saved main.ts on the server; you must click **Export to Server** before simulating.
 - Message history is not persisted across page reloads in the AI assistant.
