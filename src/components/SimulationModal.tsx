@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { FaFlask, FaCopy, FaCheck, FaSyncAlt } from 'react-icons/fa';
+import { FaFlask, FaCopy, FaCheck, FaSyncAlt, FaTimes } from 'react-icons/fa';
 import './SimulationModal.css';
 
 interface SimulationModalProps {
@@ -10,12 +10,12 @@ interface SimulationModalProps {
     onRunAgain?: () => void;
 }
 
-export default function SimulationModal({ 
-    isOpen, 
-    output, 
-    status, 
-    onClose, 
-    onRunAgain 
+export default function SimulationModal({
+    isOpen,
+    output,
+    status,
+    onClose,
+    onRunAgain
 }: SimulationModalProps) {
     const contentRef = useRef<HTMLDivElement>(null);
     const [isCopied, setIsCopied] = useState(false);
@@ -51,7 +51,7 @@ export default function SimulationModal({
 
         return text.split('\n').map((line, index) => {
             let className = 'simulation-output-line';
-            
+
             if (line.includes('[USER LOG]')) {
                 className += ' user-log';
             } else if (line.includes('[SIMULATION]') || line.includes('Warning:')) {
@@ -87,7 +87,7 @@ export default function SimulationModal({
                         </span>
                     </h2>
                     <button className="modal-close-btn" onClick={onClose}>
-                        ×
+                        <FaTimes />
                     </button>
                 </div>
 
@@ -98,23 +98,23 @@ export default function SimulationModal({
                 </div>
 
                 <div className="simulation-modal-footer">
-                    <button 
-                        className="btn-modal btn-copy" 
+                    <button
+                        className="btn-modal btn-copy"
                         onClick={handleCopy}
                         disabled={!output || output === 'Preparing workflow...\n'}
                     >
                         {isCopied ? <><FaCheck style={{ marginRight: '6px' }} /> Copied!</> : <><FaCopy style={{ marginRight: '6px' }} /> Copy Output</>}
                     </button>
                     <div style={{ flex: 1 }}></div>
-                    <button 
-                        className="btn-modal btn-secondary" 
+                    <button
+                        className="btn-modal btn-secondary"
                         onClick={onClose}
                     >
                         Close
                     </button>
                     {onRunAgain && (
-                        <button 
-                            className="btn-modal btn-primary" 
+                        <button
+                            className="btn-modal btn-primary"
                             onClick={onRunAgain}
                             disabled={status === 'running'}
                         >

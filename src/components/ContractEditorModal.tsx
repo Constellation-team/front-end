@@ -5,7 +5,8 @@ import type { CompilationResult } from '../lib/blockchain/compile';
 import { deployContract, getEtherscanUrl } from '../lib/blockchain/deploy';
 import { getConstructorConfig, parseConstructorArgs } from '../lib/blockchain/constructorArgs';
 import { MdCheckCircle, MdError } from 'react-icons/md';
-import { FaBox } from 'react-icons/fa';
+import { FaBox, FaTimes, FaLock } from 'react-icons/fa';
+import { IconMapper } from './IconMapper';
 import './ContractEditorModal.css';
 
 interface ContractEditorModalProps {
@@ -87,16 +88,16 @@ export default function ContractEditorModal({
 
   const getContractIcon = (type: string): React.ReactElement => {
     const template = CONTRACT_TEMPLATES.find((t: { name: string }) => getTemplateName(type) === t.name);
-    return template?.icon ? <span>{template.icon}</span> : <FaBox />;
+    return template?.icon ? <IconMapper icon={template.icon} size={24} /> : <FaBox />;
   };
 
   const handleCompile = async () => {
     setCompilationState('compiling');
     setErrorMessage('');
-    
+
     try {
       const result = await compileSolidity(sourceCode);
-      
+
       if (result.success) {
         setCompilationResult(result.result);
         setCompilationState('success');
@@ -119,13 +120,13 @@ export default function ContractEditorModal({
 
     setDeploymentState('deploying');
     setErrorMessage('');
-    
+
     try {
       // Get constructor config and parse args
       const templateName = getTemplateName(contractType);
       const constructorConfig = getConstructorConfig(templateName);
       const parsedArgs = parseConstructorArgs(constructorConfig, constructorArgs);
-      
+
       const result = await deployContract(
         compilationResult.abi,
         compilationResult.bytecode,
@@ -134,7 +135,7 @@ export default function ContractEditorModal({
       setDeployedAddress(result.address);
       setTxHash(result.txHash);
       setDeploymentState('success');
-      
+
       // Call parent callback with deployment info
       onDeploy({
         address: result.address,
@@ -159,7 +160,7 @@ export default function ContractEditorModal({
             <span className="contract-icon">{getContractIcon(contractType)}</span>
             <h2>Contract Editor - {getTemplateName(contractType)}</h2>
           </div>
-          <button className="close-button" onClick={onClose}>✕</button>
+          <button className="close-button" onClick={onClose}><FaTimes /></button>
         </div>
 
         <div className="modal-body">
@@ -167,7 +168,7 @@ export default function ContractEditorModal({
           <div className="editor-section">
             <div className="section-header">
               <h3>📝 Solidity Code</h3>
-              <button 
+              <button
                 className="compile-button"
                 onClick={handleCompile}
                 disabled={compilationState === 'compiling'}
@@ -206,12 +207,12 @@ export default function ContractEditorModal({
 
               {!walletAddress ? (
                 <div className="wallet-required-message">
-                  <div className="message-icon">🔒</div>
+                  <div className="message-icon"><FaLock size={24} style={{ color: '#fbbf24' }} /></div>
                   <div className="message-content">
                     <h4>Wallet Connection Required</h4>
                     <p>
-                      Please connect your MetaMask wallet using the 
-                      <strong> "🦊 Connect Wallet" </strong> 
+                      Please connect your MetaMask wallet using the
+                      <strong> "🦊 Connect Wallet" </strong>
                       button in the Flow Builder header before deploying contracts.
                     </p>
                     <div className="message-hint">
@@ -225,7 +226,7 @@ export default function ContractEditorModal({
                     <strong>Connected:</strong>
                     <code>{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</code>
                   </div>
-                  
+
                   {(() => {
                     const templateName = getTemplateName(contractType);
                     const constructorConfig = getConstructorConfig(templateName);
@@ -264,9 +265,9 @@ export default function ContractEditorModal({
                       </div>
                     );
                   })()}
-                  
+
                   {deploymentState !== 'success' ? (
-                    <button 
+                    <button
                       className="deploy-button"
                       onClick={handleDeploy}
                       disabled={deploymentState === 'deploying'}
@@ -279,7 +280,7 @@ export default function ContractEditorModal({
                       <div className="deployment-info">
                         <div className="info-row">
                           <strong>Contract:</strong>
-                          <a 
+                          <a
                             href={getEtherscanUrl(deployedAddress, 'address')}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -289,7 +290,7 @@ export default function ContractEditorModal({
                         </div>
                         <div className="info-row">
                           <strong>Transaction:</strong>
-                          <a 
+                          <a
                             href={getEtherscanUrl(txHash, 'tx')}
                             target="_blank"
                             rel="noopener noreferrer"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '../config';
-import { FaCog, FaSearch, FaTrash, FaSave } from 'react-icons/fa';
+import { FaCog, FaSearch, FaTrash, FaSave, FaTimes, FaEye, FaEyeSlash, FaLock, FaCheck } from 'react-icons/fa';
 import { MdError } from 'react-icons/md';
 import './SettingsModal.css';
 
@@ -104,16 +104,16 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         <FaCog style={{ marginRight: '8px' }} /> Simulation Settings
                     </h2>
                     <button className="modal-close-btn" onClick={onClose}>
-                        ×
+                        <FaTimes />
                     </button>
                 </div>
 
                 <div className="settings-modal-content">
                     <div className="settings-section">
                         <div className="settings-section-header">
-                            <h3>🔐 Ethereum Private Key</h3>
+                            <h3><FaLock style={{ marginRight: '8px', color: '#fbbf24' }} /> Ethereum Private Key</h3>
                             <span className={`config-status ${isConfigured ? 'configured' : 'not-configured'}`}>
-                                {isConfigured ? '✓ Configured' : '⚠️ Using Default Key'}
+                                {isConfigured ? <><FaCheck style={{ marginRight: '4px' }} /> Configured</> : '⚠️ Using Default Key'}
                             </span>
                         </div>
 
@@ -153,7 +153,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     onClick={() => setShowKey(!showKey)}
                                     title={showKey ? 'Hide key' : 'Show key'}
                                 >
-                                    {showKey ? '👁️' : '👁️‍🗨️'}
+                                    {showKey ? <FaEyeSlash /> : <FaEye />}
                                 </button>
                             </div>
                             <small className="input-hint">
@@ -169,7 +169,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                         {saveStatus === 'success' && (
                             <div className="settings-success">
-                                ✓ Configuration saved successfully!
+                                <FaCheck style={{ marginRight: '6px' }} /> Configuration saved successfully!
                             </div>
                         )}
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getEtherscanUrl } from '../lib/blockchain/deploy';
 import type { DeployedContract } from '../lib/blockchain/contractStorage';
-import { FaFileContract, FaCopy, FaExternalLinkAlt, FaRocket, FaMapMarkerAlt, FaFile, FaCog, FaBook, FaChartBar } from 'react-icons/fa';
+import { FaFileContract, FaCopy, FaExternalLinkAlt, FaRocket, FaMapMarkerAlt, FaFile, FaCog, FaBook, FaChartBar, FaTimes } from 'react-icons/fa';
 import './ContractDetailsModal.css';
 
 interface ContractDetailsModalProps {
@@ -29,7 +29,7 @@ export default function ContractDetailsModal({
             <span className="contract-icon"><FaFileContract /></span>
             <h2>{contract.name}</h2>
           </div>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="close-button" onClick={onClose}><FaTimes /></button>
         </div>
 
         <div className="modal-tabs">
