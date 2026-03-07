@@ -1,285 +1,228 @@
-# CREator - Visual Workflow Builder for Chainlink CRE
+﻿# CREator - Visual Workflow Builder for Chainlink CRE
 
-A modern, visual workflow builder for Chainlink Runtime Environment (CRE) - like Node-RED or n8n, but specifically designed for Chainlink workflows.
+> **Hackathon judges:** See [JUDGES.md](../JUDGES.md) for a step-by-step evaluation guide covering live deployment links, local setup, and a walkthrough of every feature.
 
-## ✨ Features
+A browser-based visual editor for Chainlink Runtime Environment (CRE) workflows. Design, validate, simulate, and export CRE workflows without writing code. Inspired by Node-RED and n8n.
 
-### Wallet Integration (NEW!)
-- **RainbowKit Integration**: Beautiful wallet connection UI
-- **Multi-Wallet Support**: MetaMask, WalletConnect, Coinbase, Rainbow, and more
-- **Persistent Connection**: Wallet stays connected across sessions
-- **Auto Network Switching**: Automatic Sepolia testnet detection and switching
-- **Chain Status UI**: Visual network indicator in header
+## Features
 
-### Smart Contract Deployment (NEW!)
-- **6 Contract Templates**: SimpleStorage, ERC20, ERC721, Crowdfunding, Voting, MultiSig
-- **In-Node Editor**: Edit, compile, and deploy contracts directly from nodes
-- **Constructor Arguments**: Dynamic forms for contracts requiring initialization
-- **Contract Details Modal**: View ABI, address, Etherscan links
-- **Deployment Tracking**: Deployed contracts saved and exported with workflows
+### Wallet Integration
+
+- RainbowKit 2.x connection UI (MetaMask, WalletConnect, Coinbase Wallet, Rainbow, and others)
+- Persistent wallet connection across sessions
+- Automatic Sepolia testnet detection and switching
+- Network status indicator in the header
+
+### Smart Contract Deployment
+
+- Six built-in contract templates: SimpleStorage, ERC20, ERC721, Crowdfunding, Voting, MultiSig
+- Edit, compile, and deploy contracts directly from canvas nodes
+- Dynamic constructor argument forms
+- Contract details modal with ABI viewer, address, and Etherscan link
+- Deployed contracts are saved and included in workflow exports
 
 ### Visual Flow Builder
-- **Drag & Drop Interface**: 16 pre-built node types across 6 categories
-- **Real-time Validation**: Connection rules prevent invalid workflows
-- **Node Categories**:
-  - 🎯 Triggers (Cron, Webhook)
-  - 📊 Data Sources (HTTP, Database, File)
-  - 🔗 Chainlink Services (Data Feeds, CCIP, Functions, Streams)
-  - ⛓️ Blockchain (Contract Calls, Events, Deploy - with smart contract nodes!)
-  - 🧮 Logic (If/Else, Transform, Merge)
-  - 🤖 AI (LLM Integration)
+
+- Drag-and-drop interface with 16 pre-built node types across six categories
+- Real-time connection validation with error panel
+- Node categories:
+  - Triggers: Cron, Webhook
+  - Data Sources: HTTP, Database, File
+  - Chainlink Services: Data Feeds, CCIP, Functions, Streams
+  - Blockchain: Contract Call, Event Listener, Smart Contract (deploy)
+  - Logic: If/Else, Transform, Merge
+  - AI: LLM Integration
 
 ### Code Generation
-- **TypeScript Generation**: Converts visual workflows to CRE-compatible TypeScript
-- **Automatic Configuration**: Generates main.ts, workflow.yaml, and config files
-- **CRE SDK Integration**: Uses official @chainlink/cre-sdk v1.0.9
 
-### Testing & Simulation
-- **Real CRE Testing**: "Probar" button runs actual CRE CLI simulation
-- **Live Output**: See compilation, execution, and logs in real-time
-- **No Gas Fees**: Test workflows without deploying
+- Converts visual workflows to CRE-compatible TypeScript
+- Generates main.ts, workflow.yaml, config.staging.json, and config.production.json
+- Uses @chainlink/cre-sdk 1.0.9
 
-### Project Export (NEW!)
-- **Complete ZIP Export**: One-click project generation
-- **Spring Boot Style**: Get a ready-to-run project structure
-- **Includes**:
-  - Generated workflow files (main.ts, configs, workflow.yaml)
-  - Project configuration (project.yaml, secrets.yaml)
-  - Documentation (README.md, QUICKSTART.md)
-  - Setup files (.env.example, .gitignore, LICENSE)
-  - Contracts folder structure
-  - Package management (package.json, tsconfig.json)
+### Workflow Simulation
 
-### Configuration Management
-- **Settings Modal**: Configure MetaMask private key
-- **Environment Variables**: Saves to .env file securely
-- **Multi-Environment**: Staging and production configurations
+- Runs a custom simulation engine on the backend that reads main.ts and parses 
+untime.log() calls
+- Returns output formatted identically to the real CRE CLI ([SIMULATION] and [USER LOG] markers)
+- Works in production on Render without the CRE CLI installed and without authentication
 
-## 🚀 Quick Start
+### Project Export
+
+- One-click ZIP download of a complete, ready-to-run CRE project
+- Includes: generated workflow files, project configuration, .env.example, QUICKSTART.md, README.md, contract directory, and package files
+
+### AI Assistant (ChatBot)
+
+- Natural language workflow design: describe what you want, the AI returns a structured spec
+- One-click "Build on Canvas" places nodes and edges automatically
+- Powered by DeepSeek via a Vercel serverless function proxy at /api/chat
+
+## Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ or Bun
-- CRE CLI installed globally
-- Web3 wallet (MetaMask, Rainbow, Coinbase Wallet, etc.)
-- Sepolia ETH for contract deployments
+- Web3 wallet (MetaMask or similar) for contract deployment features
+- A WalletConnect Project ID from [cloud.walletconnect.com](https://cloud.walletconnect.com)
 
 ### Installation
 
-1. **Clone and install dependencies**:
-   ```bash
-   cd front-end
-   npm install
-   ```
+```bash
+cd front-end
+npm install
+```
 
-2. **Configure environment**:
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your WalletConnect Project ID
-   # Get it from https://cloud.walletconnect.com
-   ```
+### Configuration
 
-3. **Start development server**:
-   ```bash
-   npm run dev
-   ```
+```bash
+cp .env.example .env
+```
 
-4. **Open in browser**: http://localhost:5173
+Edit .env:
+
+```env
+VITE_WALLET_CONNECT_PROJECT_ID=your_walletconnect_project_id
+VITE_API_URL=http://localhost:3001
+```
+
+### Development Server
+
+```bash
+npm run dev
+```
+
+Opens at http://localhost:5173.
 
 ### Backend Setup
 
-The frontend requires a backend API for file operations:
+The frontend requires the backend for Solidity compilation, file writes, and workflow simulation:
 
 ```bash
 cd ../back-end
 npm install
-npm start
+npm run dev
 ```
 
-Backend runs on http://localhost:3001
+Backend runs at http://localhost:3001.
 
-## 📖 Usage Guide
+## Usage
 
-### Creating a Workflow
+### Building a Workflow
 
-1. **Navigate** to the Flow Builder from the landing page
-2. **Add Trigger**: Drag a Cron or Webhook trigger to the canvas
-3. **Add Nodes**: Drag additional nodes (data sources, logic, Chainlink services)
-4. **Connect Nodes**: Click and drag from one node to another
-5. **Validate**: Check the error panel for any validation issues
+1. Open the Flow Builder from the landing page.
+2. Drag a trigger node (Cron or Webhook) onto the canvas.
+3. Drag and connect additional nodes (data sources, logic, Chainlink services).
+4. Check the validation panel for any connection errors.
 
-### Exporting Your Project
+### Simulating
 
-1. **Click "Export Flow"** button in the top right
-2. **Enter Project Name**: e.g., "my-chainlink-workflow"
-3. **Enter Description**: Brief description of your workflow
-4. **Download**: ZIP file downloads automatically
+1. Build a workflow on the canvas.
+2. Click the **Prove** button in the header.
+3. The backend reads the generated main.ts and returns a CRE simulation output in the modal.
 
-### What's in the ZIP?
+### Deploying a Contract
 
+1. Add a node of type **Simple Storage**, **ERC20 Token**, or any other contract node.
+2. Click the node to open the contract editor.
+3. Edit the Solidity code, click **Compile**, then **Deploy**.
+4. The node displays the deployed address once confirmed.
+
+### Exporting
+
+1. Click **Export Flow** in the header.
+2. Enter a project name and description.
+3. A ZIP file is downloaded containing the complete CRE project structure.
+
+### Running the Exported Project Locally
+
+```bash
+unzip my-workflow.zip
+cd my-workflow
+cp .env.example .env
+# Edit .env and add your private key
+cd workflows
+bun install
+cd ..
+cre workflow simulate workflows --target=staging-settings
 ```
-my-chainlink-workflow.zip
-├── workflows/                    # Your generated workflow
-│   ├── main.ts                  # Main workflow logic
-│   ├── workflow.yaml            # Workflow configuration
-│   ├── config.staging.json      # Staging config
-│   ├── config.production.json   # Production config
-│   ├── package.json             # Dependencies
-│   ├── tsconfig.json            # TypeScript config
-│   └── README.md                # Workflow docs
-├── contracts/                    # For smart contracts
-│   └── README.md                # Contract deployment guide
-├── project.yaml                  # CRE project settings
-├── secrets.yaml                  # Secrets configuration
-├── .env.example                 # Environment variables template
-├── .gitignore                   # Git ignore rules
-├── README.md                    # Project documentation
-├── QUICKSTART.md                # Setup guide
-└── LICENSE                      # MIT License
-```
 
-### Using the Exported Project
-
-1. **Extract the ZIP**:
-   ```bash
-   unzip my-chainlink-workflow.zip
-   cd my-chainlink-workflow
-   ```
-
-2. **Configure environment**:
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your private key
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   cd workflows
-   bun install
-   ```
-
-4. **Test the workflow**:
-   ```bash
-   # From project root
-   cre workflow simulate workflows --target=staging-settings
-   ```
-
-5. **Customize**: Edit `workflows/main.ts` to add your logic
-
-### Testing Workflows
-
-1. **Configure Settings**: Click ⚙️ Settings button
-2. **Add Private Key**: Enter your MetaMask private key
-3. **Click "Probar"**: Runs CRE CLI simulation
-4. **View Output**: See logs, errors, and results
-
-## 🚀 Deployment Guide
-
-This app is designed to be split into two services for production:
-
-### 1. Frontend (Vercel)
-The React/Vite web application can be deployed instantly to Vercel:
-1. Connect this `front-end` repo to Vercel
-2. Framework Preset: `Vite`
-3. Environment variables: `VITE_API_URL=https://your-backend-url.onrender.com` (pointing to your future Render app)
-
-### 2. Backend + Orchestrator (Render)
-The Express backend needs to run on a VPS or service like Render because it requires physical file system access to write the `.yaml` and `.ts` simulator files, and needs the `@chainlink/cre-cli` installed.
-
-Since the Backend and the CLI workspace (`cre-orchestrator`) live in separate repositories, you'll need to deploy the `back-end` repository to Render and configure it to download or clone the `cre-orchestrator` repository during the build process.
-
-1. Connect the `back-end` repo to Render as a Web Service.
-2. Build Command: `npm install && git clone https://github.com/your-username/cre-orchestrator.git ../cre-orchestrator`
-3. Start Command: `npm start`
-4. Environment variables: 
-   - `FRONTEND_URL=https://your-vercel-app.vercel.app` (pointing to your Vercel deployment for CORS config)
-   - `ORCHESTRATOR_PATH=../cre-orchestrator`
-
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 front-end/
+├── api/
+│   └── chat.ts                  # Vercel serverless function (DeepSeek proxy)
 ├── src/
 │   ├── pages/
-│   │   ├── LandingPage.tsx      # Home page with animations
-│   │   └── FlowBuilder.tsx      # Main workflow editor
+│   │   ├── LandingPage.tsx
+│   │   └── FlowBuilder.tsx      # Main canvas editor
 │   ├── components/
-│   │   ├── NodeLibrary.tsx      # Draggable node templates
-│   │   ├── SimulationModal.tsx  # Test output display
-│   │   ├── SettingsModal.tsx    # Private key configuration
+│   │   ├── IconMapper.tsx        # Central react-icons mapping component
+│   │   ├── NodeLibrary.tsx       # Draggable node templates panel
+│   │   ├── ChatBot.tsx           # AI assistant
+│   │   ├── SimulationModal.tsx   # Simulation output display
+│   │   ├── SettingsModal.tsx     # Private key configuration
+│   │   ├── ContractEditorModal.tsx
+│   │   ├── ContractDetailsModal.tsx
 │   │   └── nodes/
-│   │       └── CustomNode.tsx   # Custom node renderer
+│   │       └── CustomNode.tsx    # Canvas node renderer
+│   ├── lib/
+│   │   └── blockchain/
+│   │       ├── compile.ts        # Solidity compilation via backend
+│   │       ├── deploy.ts         # Contract deployment via wagmi/viem
+│   │       ├── contractStorage.ts
+│   │       └── solidityTemplates.ts
 │   ├── utils/
-│   │   ├── codeGenerator.ts            # Visual → TypeScript
-│   │   ├── flowValidation.ts           # Connection rules
-│   │   └── projectTemplateGenerator.ts # ZIP generation
+│   │   ├── codeGenerator.ts            # Visual flow -> TypeScript
+│   │   ├── flowValidation.ts           # Connection rule enforcement
+│   │   └── projectTemplateGenerator.ts # ZIP export
 │   ├── store/
-│   │   └── flowStore.ts         # Zustand state management
-│   └── App.tsx                  # Router configuration
+│   │   └── flowStore.ts          # Zustand global state
+│   └── wagmi.ts                  # RainbowKit / wagmi configuration
 └── package.json
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Frontend**: React 19 + Vite 7.3.1 + TypeScript
-- **Flow Editor**: React Flow 11.11.4
-- **State**: Zustand 5.0.11
-- **Wallet**: RainbowKit 2.x + wagmi 2.x + viem 2.x
-- **Blockchain**: ethers.js 6.16.0
-- **Smart Contracts**: Solidity 0.8.20 (compiled via backend API)
-- **ZIP**: JSZip 3.10.1
-- **Routing**: React Router 7.13.0
-- **Backend**: Node.js + Express + solc 0.8.34
-- **CRE**: @chainlink/cre-sdk 1.0.9
+| Layer | Technology |
+|---|---|
+| Framework | React 19.2.0 + Vite 7.3.1 + TypeScript 5.9 |
+| Flow editor | React Flow 11.11.4 |
+| State management | Zustand 5.0.11 |
+| Wallet | RainbowKit 2.2.10 + wagmi 2.19.5 + viem 2.47.0 |
+| Blockchain | ethers.js 6.16.0 |
+| Icons | react-icons 5.6.0 |
+| ZIP export | JSZip 3.10.1 |
+| Routing | React Router 7.13.0 |
+| AI proxy | Vercel serverless function + DeepSeek API |
+| Deployment | Vercel |
 
-## 📚 Documentation
+## Deployment
 
-- **[RainbowKit Integration Guide](./documentation/RAINBOWKIT.md)** - Complete wallet setup
-- **[ChatBot Documentation](./documentation/CHATBOT.md)** - AI assistant features
+### Frontend (Vercel)
 
-## 🔒 Security
+1. Connect the ront-end directory to Vercel.
+2. Framework preset: **Vite**.
+3. Set environment variables:
+   - VITE_WALLET_CONNECT_PROJECT_ID - your WalletConnect project ID
+   - VITE_API_URL - URL of your Render backend
+   - DEEPSEEK_API_KEY - DeepSeek API key for the chat serverless function
 
-- **Private Keys**: Stored locally in .env files (never sent to external servers)
-- **Wallet Connection**: Secure connection via RainbowKit (supports hardware wallets)
-- **Contract Compilation**: Handled by backend API (secure Solidity compilation)
-- **Validation**: All connections validated before workflow generation
-- **Local Processing**: Code generation happens client-side
-- **Git Safety**: .env files automatically ignored
+### Backend (Render)
 
-## 📝 Known Limitations
+See ack-end/DEPLOYMENT.md for the full guide.
 
-- **HttpCapability**: Not available in CRE SDK v1.0.9 (falls back to Cron)
-- **fetch()**: Not available in CRE/QuickJS runtime (use simulated data)
-- **Node Parameters**: Not yet editable in UI (edit generated code)
-- **Templates**: No workflow templates yet (coming soon)
+## Known Limitations
 
-## 🎯 Roadmap
+- HttpCapability is not available in @chainlink/cre-sdk 1.0.9; generated workflows use simulated HTTP data.
+- etch() is not available in the CRE/QuickJS runtime; use Chainlink Functions for real HTTP requests.
+- Node parameters (schedule, URL, etc.) cannot be edited in the UI; edit the generated main.ts after export.
+- Simulation runs against the last-saved main.ts on the server; you must click **Export to Server** before simulating.
+- Message history is not persisted across page reloads in the AI assistant.
 
-- [ ] Node parameter editing in UI
-- [ ] Workflow templates/presets
-- [ ] Direct CRE deployment
-- [ ] Multi-chain support
-- [ ] Node marketplace
-- [ ] Collaborative editing
+## Resources
 
-## 🤝 Contributing
-
-This is a hackathon project! Contributions welcome:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📚 Resources
-
-- [CRE Documentation](https://docs.chain.link/cre)
-- [React Flow Docs](https://reactflow.dev/)
-
-## 🙏 Acknowledgments
-
-- Built for Chainlink Hackathon 2026
-- Inspired by Node-RED and n8n
-- Powered by Chainlink Runtime Environment
-
----
-
+- [Chainlink CRE Documentation](https://docs.chain.link/cre)
+- [React Flow Documentation](https://reactflow.dev)
+- [RainbowKit Documentation](https://www.rainbowkit.com/docs)
+- [WalletConnect Cloud](https://cloud.walletconnect.com)
