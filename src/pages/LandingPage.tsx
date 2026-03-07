@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBolt, FaPalette, FaLink, FaFlask, FaBox, FaCubes, FaNetworkWired, FaCodeBranch, FaShieldAlt, FaPlay, FaChevronRight } from 'react-icons/fa';
+import { FaBolt, FaPalette, FaLink, FaFlask, FaCubes, FaNetworkWired, FaCodeBranch, FaShieldAlt, FaPlay, FaChevronRight, FaRobot } from 'react-icons/fa';
 import './LandingPage.css';
 
 export default function LandingPage() {
@@ -307,7 +307,7 @@ export default function LandingPage() {
                     <div className="nav-links">
                         <a href="#features">Features</a>
                         <a href="#how-it-works">How It Works</a>
-                        <a href="#docs">Docs</a>
+                        <a href="https://github.com/Constellation-team/front-end/blob/main/documentation/WORKFLOW_TESTING.md" target="_blank" rel="noopener noreferrer">Docs</a>
                         <button className="btn-primary" onClick={() => navigate('/builder')}>Launch Builder</button>
                     </div>
                 </div>
@@ -352,7 +352,7 @@ export default function LandingPage() {
                             <div className="stat-label">Visual Logic</div>
                         </div>
                         <div className="stat">
-                            <div className="stat-number">15+</div>
+                            <div className="stat-number">20+</div>
                             <div className="stat-label">Node Types</div>
                         </div>
                         <div className="stat">
@@ -388,19 +388,19 @@ export default function LandingPage() {
                     <div className="feature-card">
                         <div className="feature-icon" style={{ color: '#10b981' }}><FaCubes size={36} /></div>
                         <h3>Instant Export</h3>
-                        <p>Generate production-ready Solidity contracts and Hardhat projects from your visual graph.</p>
+                        <p>Download a complete <code>@chainlink/cre-sdk</code> project — TypeScript, workflow.yaml, and config — as a ZIP file ready to deploy with the CRE CLI.</p>
                     </div>
 
                     <div className="feature-card">
                         <div className="feature-icon" style={{ color: '#f59e0b' }}><FaFlask size={36} /></div>
-                        <h3>Local Simulation</h3>
-                        <p>Test triggers and monitor data flow across nodes locally before touching a testnet.</p>
+                        <h3>CRE Simulation</h3>
+                        <p>Click Prove to run the simulation engine and see authentic CRE CLI output — <code>[SIMULATION]</code> and <code>[USER LOG]</code> markers — no CLI installation or authentication required.</p>
                     </div>
 
                     <div className="feature-card">
-                        <div className="feature-icon" style={{ color: '#ec4899' }}><FaBox size={36} /></div>
-                        <h3>Template Library</h3>
-                        <p>Start fast with pre-built boilerplate workflows for DeFi, Gaming, and Cross-chain apps.</p>
+                        <div className="feature-icon" style={{ color: '#ec4899' }}><FaRobot size={36} /></div>
+                        <h3>AI Workflow Assistant</h3>
+                        <p>Describe your workflow in plain English. The AI builds the canvas automatically — nodes placed, edges wired, ready to simulate.</p>
                     </div>
 
                     <div className="feature-card">
@@ -450,8 +450,8 @@ export default function LandingPage() {
                             <div className="step-number">03</div>
                         </div>
                         <div className="step-content">
-                            <h3>Compile & Deploy</h3>
-                            <p>Export the interconnected graph into executable web3 infrastructure instantly.</p>
+                            <h3>Simulate & Export</h3>
+                            <p>Run the CRE simulation engine to validate your workflow, then download a deployable <code>@chainlink/cre-sdk</code> project in one click.</p>
                         </div>
                     </div>
                 </div>
@@ -465,7 +465,7 @@ export default function LandingPage() {
                         Build your first Chainlink workflow in minutes
                     </p>
                     <button className="btn-hero" onClick={() => navigate('/builder')}>
-                        Lanch FlowBuilder
+                        Launch FlowBuilder
                         <FaChevronRight className="btn-arrow" />
                     </button>
                 </div>
@@ -483,9 +483,10 @@ export default function LandingPage() {
                         <p>Built for Chainlink Convergence Hackathon 2026</p>
                     </div>
                     <div className="footer-links">
-                        <a href="#docs">Documentation</a>
-                        <a href="#github">GitHub</a>
-                        <a href="#twitter">Twitter</a>
+                        <a href="https://github.com/Constellation-team/front-end/blob/main/documentation/WORKFLOW_TESTING.md" target="_blank" rel="noopener noreferrer">Documentation</a>
+                        <a href="https://github.com/Constellation-team" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        <a href="https://github.com/Franci-343" target="_blank" rel="noopener noreferrer">Franci-343</a>
+                        <a href="https://github.com/JHAMILCALI" target="_blank" rel="noopener noreferrer">JHAMILCALI</a>
                     </div>
                 </div>
             </footer>
