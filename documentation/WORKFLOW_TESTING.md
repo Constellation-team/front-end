@@ -120,7 +120,7 @@ creator-workflow/
 │   ├── main.ts          (generated TypeScript using @chainlink/cre-sdk)
 │   ├── workflow.yaml    (CRE target definitions: staging-settings)
 │   ├── config.staging.json
-│   └── package.json     (declares @chainlink/cre-sdk dependency)
+│   └── package.json     (declares @chainlink/cre-sdk and viem dependencies)
 └── README.md
 ```
 
@@ -128,9 +128,11 @@ creator-workflow/
 
 ```bash
 cd creator-workflow/workflows
-npm install
-cre workflow simulate   # requires CRE CLI with staging credentials
+bun install          # runs cre-setup via postinstall; installs @chainlink/cre-sdk + viem
+cre workflow simulate workflows --target=staging-settings
 ```
+
+The exported `deployed-contracts/<name>/interact.ts` files use **viem** (already included in `package.json`) for standalone contract interaction — no ethers.js required.
 
 **Relevant code:** `front-end/src/utils/projectTemplateGenerator.ts`, `front-end/src/utils/codeGenerator.ts`
 

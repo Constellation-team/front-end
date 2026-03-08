@@ -330,113 +330,56 @@ function generateNodeCode(node: Node, index: number): string {
 }
 
 function generateContractNodeCode(nodeType: string, label: string, contractAddress: string | undefined, stepNum: number): string {
-    const isDeployed = contractAddress ? true : false;
-    const addressComment = isDeployed ? `Deployed at: ${contractAddress}` : 'Not yet deployed - deploy from CREator UI';
-    
+    const isDeployed = !!contractAddress;
+    const addressLine = isDeployed
+        ? `  // Contract address: ${contractAddress}`
+        : `  // Contract not yet deployed — deploy from the CREator visual builder first`;
+
+    const interactNote = isDeployed
+        ? `  // To call this contract from outside a CRE workflow use the interact.ts file
+  // exported in the ZIP project (deployed-contracts/ folder).`
+        : '';
+
     switch (nodeType) {
         case 'simple-storage':
             return `  // Step ${stepNum}: SimpleStorage Contract
-  // ${addressComment}
-  ${isDeployed ? `const storageContract = new ethers.Contract(
-    "${contractAddress}",
-    ["function set(uint256 _value)", "function get() view returns (uint256)"],
-    signer
-  );
-  // await storageContract.set(42);
-  // const value = await storageContract.get();
-  runtime.log("SimpleStorage contract interaction ready");` : '// Deploy this contract from the CREator visual builder first'}`;
-        
+${addressLine}
+${interactNote}
+  runtime.log("SimpleStorage${isDeployed ? ` at ${contractAddress}` : ' (not deployed)'}: ready");`;
+
         case 'erc20-token':
             return `  // Step ${stepNum}: ERC20 Token Contract
-  // ${addressComment}
-  ${isDeployed ? `const tokenContract = new ethers.Contract(
-    "${contractAddress}",
-    [
-      "function balanceOf(address) view returns (uint256)",
-      "function transfer(address to, uint256 amount) returns (bool)",
-      "function name() view returns (string)",
-      "function symbol() view returns (string)"
-    ],
-    signer
-  );
-  // const balance = await tokenContract.balanceOf(address);
-  // await tokenContract.transfer(recipient, amount);
-  runtime.log("ERC20 token contract interaction ready");` : '// Deploy this ERC20 token from the CREator visual builder first'}`;
-        
+${addressLine}
+${interactNote}
+  runtime.log("ERC20 Token${isDeployed ? ` at ${contractAddress}` : ' (not deployed)'}: ready");`;
+
         case 'erc721-nft':
             return `  // Step ${stepNum}: ERC721 NFT Contract
-  // ${addressComment}
-  ${isDeployed ? `const nftContract = new ethers.Contract(
-    "${contractAddress}",
-    [
-      "function mint(address to) returns (uint256)",
-      "function balanceOf(address owner) view returns (uint256)",
-      "function ownerOf(uint256 tokenId) view returns (address)",
-      "function transferFrom(address from, address to, uint256 tokenId)"
-    ],
-    signer
-  );
-  // const tokenId = await nftContract.mint(recipientAddress);
-  // const owner = await nftContract.ownerOf(tokenId);
-  runtime.log("ERC721 NFT contract interaction ready");` : '// Deploy this NFT contract from the CREator visual builder first'}`;
-        
+${addressLine}
+${interactNote}
+  runtime.log("ERC721 NFT${isDeployed ? ` at ${contractAddress}` : ' (not deployed)'}: ready");`;
+
         case 'crowdfunding':
             return `  // Step ${stepNum}: Crowdfunding Contract
-  // ${addressComment}
-  ${isDeployed ? `const crowdfundingContract = new ethers.Contract(
-    "${contractAddress}",
-    [
-      "function contribute() payable",
-      "function claimFunds()",
-      "function refund()",
-      "function totalContributed() view returns (uint256)",
-      "function goal() view returns (uint256)"
-    ],
-    signer
-  );
-  // await crowdfundingContract.contribute({ value: ethers.parseEther("0.1") });
-  // const total = await crowdfundingContract.totalContributed();
-  runtime.log("Crowdfunding contract interaction ready");` : '// Deploy this crowdfunding contract from the CREator visual builder first'}`;
-        
+${addressLine}
+${interactNote}
+  runtime.log("Crowdfunding${isDeployed ? ` at ${contractAddress}` : ' (not deployed)'}: ready");`;
+
         case 'voting':
             return `  // Step ${stepNum}: Voting Contract
-  // ${addressComment}
-  ${isDeployed ? `const votingContract = new ethers.Contract(
-    "${contractAddress}",
-    [
-      "function addProposal(string description)",
-      "function vote(uint256 proposalIndex)",
-      "function getWinner() view returns (string, uint256)",
-      "function proposals(uint256) view returns (string, uint256)"
-    ],
-    signer
-  );
-  // await votingContract.addProposal("Proposal description");
-  // await votingContract.vote(0);
-  // const [winner, votes] = await votingContract.getWinner();
-  runtime.log("Voting contract interaction ready");` : '// Deploy this voting contract from the CREator visual builder first'}`;
-        
+${addressLine}
+${interactNote}
+  runtime.log("Voting${isDeployed ? ` at ${contractAddress}` : ' (not deployed)'}: ready");`;
+
         case 'multisig-wallet':
             return `  // Step ${stepNum}: MultiSig Wallet Contract
-  // ${addressComment}
-  ${isDeployed ? `const multisigContract = new ethers.Contract(
-    "${contractAddress}",
-    [
-      "function submit(address to, uint256 value)",
-      "function confirm(uint256 txId)",
-      "function execute(uint256 txId)",
-      "function transactions(uint256) view returns (address, uint256, bool, uint256)"
-    ],
-    signer
-  );
-  // await multisigContract.submit(recipientAddress, ethers.parseEther("1.0"));
-  // await multisigContract.confirm(0);
-  // await multisigContract.execute(0);
-  runtime.log("MultiSig wallet contract interaction ready");` : '// Deploy this MultiSig wallet from the CREator visual builder first'}`;
-        
+${addressLine}
+${interactNote}
+  runtime.log("MultiSig Wallet${isDeployed ? ` at ${contractAddress}` : ' (not deployed)'}: ready");`;
+
         default:
-            return `  // Step ${stepNum}: Smart Contract - ${label}
-  // ${addressComment}
+            return `  // Step ${stepNum}: Smart Contract — ${label}
+${addressLine}
   runtime.log("Contract interaction: ${label}");`;
     }
 }

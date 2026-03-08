@@ -872,18 +872,20 @@ All deployed contracts are already referenced in the generated workflow code (\`
 ### Example: Importing a Contract
 
 \`\`\`typescript
-import { ethers } from 'ethers';
+import { createPublicClient, createWalletClient, http, privateKeyToAccount } from 'viem';
+import { sepolia } from 'viem/chains';
 import contractInfo from './deployed-contracts/my-contract/contract-info.json';
 import abi from './deployed-contracts/my-contract/abi.json';
 
-const contract = new ethers.Contract(
-    contractInfo.address,
-    abi,
-    signer
-);
+const account = privateKeyToAccount(process.env.CRE_ETH_PRIVATE_KEY as \`0x\${string}\`);
+const walletClient = createWalletClient({ account, chain: sepolia, transport: http() });
+const publicClient = createPublicClient({ chain: sepolia, transport: http() });
 
-// Interact with your contract
-const result = await contract.someMethod();
+// Read from contract
+const result = await publicClient.readContract({ address: contractInfo.address, abi, functionName: 'someMethod' });
+
+// Write to contract
+const hash = await walletClient.writeContract({ address: contractInfo.address, abi, functionName: 'someMethod', args: [] });
 \`\`\`
 
 ## Security Note
@@ -898,14 +900,15 @@ For mainnet deployment:
 
 ## Need Help?
 
-- [CREator Documentation](https://github.com/yourusername/creator)
-- [Ethers.js Documentation](https://docs.ethers.org/)
-- [Chainlink Documentation](https://docs.chain.link/)
+- [CREator Documentation](https://github.com/Constellation-team)
+- [viem Documentation](https://viem.sh/)
+- [Chainlink CRE Documentation](https://docs.chain.link/cre)
 `;
 }
 
 function generateContractInteractionExample(contract: DeployedContract): string {
-    return `import { ethers } from 'ethers';
+    return `import { createPublicClient, createWalletClient, http, privateKeyToAccount, parseEther, formatEther } from 'viem';
+import { sepolia } from 'viem/chains';
 
 /**
  * Example interaction with ${contract.name}
@@ -915,23 +918,22 @@ function generateContractInteractionExample(contract: DeployedContract): string 
  * Deployed: ${new Date(contract.deployedAt).toLocaleString()}
  * 
  * View on Etherscan: https://sepolia.etherscan.io/address/${contract.address}
+ * 
+ * Run with: bun interact.ts
  */
 
 // Contract ABI (imported from abi.json or defined inline)
 const ABI = ${JSON.stringify(contract.abi, null, 2)};
 
 // Contract address
-const CONTRACT_ADDRESS = '${contract.address}';
+const CONTRACT_ADDRESS = '${contract.address}' as const;
+
+// Setup viem clients (CRE_ETH_PRIVATE_KEY is set via .env)
+const account = privateKeyToAccount(process.env.CRE_ETH_PRIVATE_KEY as \`0x\${string}\`);
+const walletClient = createWalletClient({ account, chain: sepolia, transport: http() });
+const publicClient = createPublicClient({ chain: sepolia, transport: http() });
 
 async function interact() {
-    // Setup provider and signer
-    // For production, use environment variables for private keys
-    const provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/YOUR_INFURA_KEY');
-    const signer = new ethers.Wallet('YOUR_PRIVATE_KEY', provider);
-    
-    // Create contract instance
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-    
     try {
         // Example interactions (uncomment and modify as needed)
         
@@ -943,7 +945,7 @@ async function interact() {
 }
 
 // Run the interaction
-// interact().then(() => console.log('Done')).catch(console.error);
+interact().catch(console.error);
 
 export { ABI, CONTRACT_ADDRESS };
 `;
@@ -952,103 +954,85 @@ export { ABI, CONTRACT_ADDRESS };
 function generateContractSpecificExamples(contractType: string): string {
     switch (contractType) {
         case 'simple-storage':
-            return `        // Set a value
-        // const tx = await contract.set(42);
-        // await tx.wait();
-        // console.log('Value set to 42');
+            return `        // Read the stored value
+        // const value = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'get' });
+        // console.log('Current value:', value);
         
-        // Get the value
-        // const value = await contract.get();
-        // console.log('Current value:', value.toString());`;
+        // Set a new value
+        // const hash = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'set', args: [42n] });
+        // console.log('Value set, tx:', hash);`;
         
         case 'erc20-token':
             return `        // Get token info
-        // const name = await contract.name();
-        // const symbol = await contract.symbol();
+        // const name = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'name' });
+        // const symbol = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'symbol' });
         // console.log(\`Token: \${name} (\${symbol})\`);
         
         // Check balance
-        // const balance = await contract.balanceOf(signer.address);
-        // console.log('Your balance:', ethers.formatEther(balance));
+        // const balance = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'balanceOf', args: [account.address] });
+        // console.log('Your balance:', formatEther(balance as bigint));
         
         // Transfer tokens
-        // const recipientAddress = '0x...';
-        // const amount = ethers.parseEther('10');
-        // const tx = await contract.transfer(recipientAddress, amount);
-        // await tx.wait();
-        // console.log('Tokens transferred');`;
+        // const hash = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'transfer', args: ['0xRECIPIENT' as \`0x\${string}\`, parseEther('10')] });
+        // console.log('Tokens transferred, tx:', hash);`;
         
         case 'erc721-nft':
             return `        // Mint an NFT
-        // const tx = await contract.mint(signer.address);
-        // const receipt = await tx.wait();
-        // console.log('NFT minted');
+        // const hash = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'mint', args: [account.address] });
+        // console.log('NFT minted, tx:', hash);
         
-        // Check balance
-        // const balance = await contract.balanceOf(signer.address);
-        // console.log('Your NFTs:', balance.toString());
+        // Check NFT balance
+        // const balance = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'balanceOf', args: [account.address] });
+        // console.log('Your NFTs:', balance);
         
         // Transfer NFT
-        // const tokenId = 1;
-        // const recipientAddress = '0x...';
-        // const tx2 = await contract.transferFrom(signer.address, recipientAddress, tokenId);
-        // await tx2.wait();
-        // console.log('NFT transferred');`;
+        // const hash2 = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'transferFrom', args: [account.address, '0xRECIPIENT' as \`0x\${string}\`, 1n] });
+        // console.log('NFT transferred, tx:', hash2);`;
         
         case 'crowdfunding':
             return `        // Contribute to campaign
-        // const tx = await contract.contribute({ value: ethers.parseEther('0.1') });
-        // await tx.wait();
-        // console.log('Contribution sent');
+        // const hash = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'contribute', value: parseEther('0.1') });
+        // console.log('Contribution sent, tx:', hash);
         
         // Check campaign status
-        // const totalContributed = await contract.totalContributed();
-        // const goal = await contract.goal();
-        // console.log(\`Progress: \${ethers.formatEther(totalContributed)} / \${ethers.formatEther(goal)} ETH\`);
+        // const totalContributed = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'totalContributed' });
+        // const goal = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'goal' });
+        // console.log(\`Progress: \${formatEther(totalContributed as bigint)} / \${formatEther(goal as bigint)} ETH\`);
         
         // Claim funds (owner only, after deadline and goal reached)
-        // const tx2 = await contract.claimFunds();
-        // await tx2.wait();
-        // console.log('Funds claimed');`;
+        // const hash2 = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'claimFunds' });
+        // console.log('Funds claimed, tx:', hash2);`;
         
         case 'voting':
             return `        // Add a proposal (chairperson only)
-        // const tx = await contract.addProposal('Proposal: Increase budget by 10%');
-        // await tx.wait();
-        // console.log('Proposal added');
+        // const hash = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'addProposal', args: ['Proposal: Increase budget by 10%'] });
+        // console.log('Proposal added, tx:', hash);
         
         // Vote on a proposal
-        // const proposalIndex = 0;
-        // const tx2 = await contract.vote(proposalIndex);
-        // await tx2.wait();
-        // console.log('Vote cast');
+        // const hash2 = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'vote', args: [0n] });
+        // console.log('Vote cast, tx:', hash2);
         
         // Get winner
-        // const [winnerDesc, winnerVotes] = await contract.getWinner();
-        // console.log(\`Winner: \${winnerDesc} with \${winnerVotes} votes\`);`;
+        // const winner = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'getWinner' });
+        // console.log('Winner:', winner);`;
         
         case 'multisig-wallet':
             return `        // Submit a transaction
-        // const recipientAddress = '0x...';
-        // const amount = ethers.parseEther('1.0');
-        // const tx = await contract.submit(recipientAddress, amount);
-        // await tx.wait();
-        // console.log('Transaction submitted');
+        // const hash = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'submit', args: ['0xRECIPIENT' as \`0x\${string}\`, parseEther('1.0')] });
+        // console.log('Transaction submitted, tx:', hash);
         
         // Confirm a transaction
-        // const txId = 0;
-        // const tx2 = await contract.confirm(txId);
-        // await tx2.wait();
-        // console.log('Transaction confirmed');
+        // const txId = 0n;
+        // const hash2 = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'confirm', args: [txId] });
+        // console.log('Transaction confirmed, tx:', hash2);
         
         // Execute a transaction (after enough confirmations)
-        // const tx3 = await contract.execute(txId);
-        // await tx3.wait();
-        // console.log('Transaction executed');`;
+        // const hash3 = await walletClient.writeContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'execute', args: [txId] });
+        // console.log('Transaction executed, tx:', hash3);`;
         
         default:
             return `        // Add your contract interaction code here
-        // const result = await contract.someMethod();
+        // const result = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: ABI, functionName: 'someMethod' });
         // console.log('Result:', result);`;
     }
 }
